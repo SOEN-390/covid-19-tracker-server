@@ -1,0 +1,22 @@
+{
+  "name": "covid-19-tracker-server",
+  "version": "1.0.0",
+  "description": "Server Repository of COVID-19 Tracker application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SOEN-390/covid-19-tracker-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SOEN-390/covid-19-tracker-server/issues"
+  },
+  "homepage": "https://github.com/SOEN-390/covid-19-tracker-server#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
