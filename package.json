@@ -2,7 +2,7 @@
   "name": "covid-19-tracker-server",
   "version": "1.0.0",
   "description": "Server Repository of COVID-19 Tracker application",
-  "main": "index.js",
+  "main": "./build/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/SOEN-390/covid-19-tracker-server#readme",
   "dependencies": {
-    "express": "^4.17.2"
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "pusher": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.8"
   }
 }
