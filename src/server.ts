@@ -1,8 +1,14 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+import express from 'express'
 
+const app = express()
+const PORT = 8080
 
-async function startServer() {
+app.use(express.json())
 
+app.get('/', (req, res) => {
+    res.send('Welcome to the COVID-19 Tracker App Server')
+});
 
-}
+app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`)
+})
