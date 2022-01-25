@@ -2,6 +2,7 @@ version: "3.9"
 services:
   web:
     container_name: covid-19-tracker-server
+    image: covid-19-tracker-server
     command: npm start
     build:
       context: .

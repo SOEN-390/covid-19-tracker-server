@@ -22,6 +22,8 @@
   "dependencies": {
     "@types/express": "^4.17.13",
     "body-parser": "^1.19.1",
+    "dotenv": "^14.2.0",
+    "mysql": "^2.18.1",
     "pusher": "^5.0.0"
   },
   "devDependencies": {
