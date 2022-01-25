@@ -2,17 +2,16 @@ FROM node:latest@sha256:0bb57a145304c637c9e03cde714ec1cff7182215c3d326134312ac01
 
 ARG PORT
 
+# TypeScript
+RUN npm install -g typescript@4.1.2
+
 RUN mkdir /code/
 WORKDIR /code/
 
-COPY package.json ./
+COPY package.json .
 
 # Install all Packages
 RUN npm install
-
-
-# TypeScript
-RUN npm install -g typescript@4.1.2
 
 # Copy all other source code to work directory
 COPY src src
