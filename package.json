@@ -20,11 +20,12 @@
   },
   "homepage": "https://github.com/SOEN-390/covid-19-tracker-server#readme",
   "dependencies": {
-    "@types/express": "^4.17.13",
     "body-parser": "^1.19.1",
+    "express": "^4.17.2",
     "pusher": "^5.0.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/node": "^17.0.8",
     "jest": "^27.4.7"
   }
