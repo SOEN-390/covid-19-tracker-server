@@ -6,6 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "build": "tsc",
+    "dev": "NODE_ENV=development & ts-node-dev --respawn --transpile-only ./src/server.ts",
+    "dev-win": "SET NODE_ENV=development & ts-node-dev --respawn --transpile-only ./src/server.ts",
     "test": "jest -c ./jest.unit.json",
     "start": "node ./build/server.js"
   },
@@ -24,11 +26,14 @@
     "express": "^4.17.2",
     "dotenv": "^14.2.0",
     "mysql": "^2.18.1",
-    "pusher": "^5.0.0"
+    "pusher": "^5.0.0",
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.8",
-    "jest": "^27.4.7"
+    "jest": "^27.4.7",
+    "ts-node-dev": "latest",
+    "typescript": "^4.1.2"
   }
 }

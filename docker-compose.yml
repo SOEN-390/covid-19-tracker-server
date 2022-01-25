@@ -10,7 +10,5 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src:/code/src
-      - ./node_modules:/code/node_modules
-
+      - ./.env:/code/.env
 
