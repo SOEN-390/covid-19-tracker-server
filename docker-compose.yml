@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    container_name: covid-19-tracker-server
+    command: npm start
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/code/src
+      - ./node_modules:/code/node_modules
+
+
