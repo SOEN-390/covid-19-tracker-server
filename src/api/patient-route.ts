@@ -13,10 +13,15 @@ export default (app: Router) => {
         params: Joi.object({
             id: Joi.string().required()
         })
-    }), (req,res,next) => {
-        const patientServiceInstance = Container.get(PatientService);
-        const result = patientServiceInstance.helloWorld();
-        res.send(result);
+    }), async (req, res, next) => {
+        try {
+            const patientServiceInstance = Container.get(PatientService);
+            const result = await patientServiceInstance.helloWorld();
+            return res.json(result);
+        }
+        catch (e) {
+            return next(e);
+        }
     });
 
 }
