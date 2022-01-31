@@ -1,36 +1,28 @@
+import 'reflect-metadata';
 import express from 'express'
+import config from './config';
+import routes from './api/index';
+import db from './config/db'
 
-const app = express()
-const PORT = 8080
+function startServer() {
+    const app = express()
+    const PORT = 8080
 
-require('dotenv').config()
+    require('dotenv').config()
 
-app.use(express.json())
+    app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send('Welcome to the COVID-19 Tracker App Server')
-});
+    app.get('/', (req, res) => {
+        res.send('Welcome to the COVID-19 Tracker App Server')
+    });
 
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`)
-});
+    app.listen(PORT, () => {
+        console.log(`Server is listening on port ${PORT}`)
+    });
 
-const mysql = require('mysql');
+    app.use(config.api.prefix + config.api.version, routes());
 
-const connection = mysql.createConnection({
-    host     : process.env.RDS_HOSTNAME,
-    user     : process.env.RDS_USERNAME,
-    password : process.env.RDS_PASSWORD,
-    port     : process.env.RDS_PORT
-});
+    db();
+}
 
-connection.connect((err: Error) => {
-    if (err) {
-        console.error('Database connection failed: ' + err.stack);
-        return;
-    }
-
-    console.log('Connected to database.');
-});
-
-connection.end();
+startServer();
