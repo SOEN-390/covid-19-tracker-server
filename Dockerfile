@@ -17,6 +17,7 @@ RUN npm install
 COPY src src
 COPY tests tests
 COPY tsconfig.json ./
+COPY jest.unit.json ./
 
 # compile ts to js
 RUN tsc --skipLibCheck
