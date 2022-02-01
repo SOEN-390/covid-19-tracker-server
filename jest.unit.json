@@ -1,6 +1,12 @@
 {
     "preset": "ts-jest",
     "coverageDirectory": "./coverage",
+    "collectCoverageFrom": ["./src/**/*.ts",
+                            "!**/node_modules/**"],
+    "displayName": {
+        "name": "Server",
+        "color": "blue"
+    },
     "testMatch": [
         "**/?(*.)+(spec).ts"
     ],
