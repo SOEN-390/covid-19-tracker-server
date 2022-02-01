@@ -9,6 +9,7 @@
     "dev": "NODE_ENV=development & ts-node-dev --respawn --transpile-only ./src/server.ts",
     "dev-win": "SET NODE_ENV=development & ts-node-dev --respawn --transpile-only ./src/server.ts",
     "test": "jest -c ./jest.unit.json",
+    "test:coverage": "jest --coverage -c ./jest.unit.json",
     "start": "node ./build/server.js"
   },
   "repository": {
