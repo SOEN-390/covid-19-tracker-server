@@ -14,12 +14,12 @@ export default (app: Router) => {
             id: Joi.string().required()
         })
     }), async (req, res, next) => {
+        console.debug("Calling get patient..");
         try {
             const patientServiceInstance = Container.get(PatientService);
             const result = await patientServiceInstance.helloWorld();
             return res.json(result);
-        }
-        catch (e) {
+        } catch (e) {
             return next(e);
         }
     });
