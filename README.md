@@ -16,7 +16,7 @@ Setup
 For development run the following command from the terminal:
 - On windows: `npm run dev-win`
 - Unix: `npm run dev`
-
+- Check http://localhost:8080/
 
 # Optional: running docker
 
