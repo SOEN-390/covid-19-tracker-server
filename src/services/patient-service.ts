@@ -19,6 +19,12 @@ export default class PatientService {
 
         return  new Promise((resolve, reject) => {
             db.query("SELECT email FROM Authority WHERE privilege = 'admin';", (error, result) => {
+                if (error) {
+                    console.debug("ERROR:", error);
+                }
+                if (result) {
+                    console.debug("SUCCESS: ", result);
+                }
                 return error ? reject(error) : resolve(result);
             });
         });
