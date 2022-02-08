@@ -26,8 +26,11 @@ jobs:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: echo $DEV_ENV > .env
         
-    - name: Build and run the Docker containers
-      run: docker-compose up --build -d
+    - name: Build
+      run: docker-compose build
+
+    - name: run the Docker containers
+      run: docker-compose up
       
     - name: Run tests
       run: docker exec covid-19-tracker-server npm run test
