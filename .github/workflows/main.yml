@@ -25,7 +25,8 @@ jobs:
       env:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: |
-        echo $DEV_ENV | base64 --decode > .env
+        echo $DEV_ENV
+        echo $DEV_ENV > .env
         echo "$(cat .env)"
         
     - name: Build
