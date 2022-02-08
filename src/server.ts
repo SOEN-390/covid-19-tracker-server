@@ -26,6 +26,7 @@ function startServer() {
     app.use(config.api.prefix + config.api.version, routes());
 
     process.env.NODE_ENV = 'development';
+    console.log(process.env);
 
 
 
