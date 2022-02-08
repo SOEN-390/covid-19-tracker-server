@@ -1,8 +1,9 @@
 import 'reflect-metadata';
 import express from 'express'
 import config from './config';
-import routes from './api/index';
+import routes from './api/routes';
 import db from './config/db'
+import * as admin from 'firebase-admin';
 
 function startServer() {
     const app = express()
@@ -23,6 +24,16 @@ function startServer() {
     app.use(config.api.prefix + config.api.version, routes());
 
     db();
+
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY[0] === '-'
+                            ? process.env.FIREBASE_ADMIN_PRIVATE_KEY
+                            : JSON.parse(process.env.FIREBASE_ADMIN_PRIVATE_KEY),
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            projectId: process.env.FIREBASE_PROJECT_ID
+        })
+    });
 }
 
 startServer();
