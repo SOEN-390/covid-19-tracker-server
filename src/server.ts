@@ -25,11 +25,15 @@ function startServer() {
 
     app.use(config.api.prefix + config.api.version, routes());
 
+    process.env.NODE_ENV = 'development';
+
+
+
     db();
 
     admin.initializeApp({
         credential: admin.credential.cert({
-            projectId: "cvoid-19-app",
+            projectId: process.env.FIREBASE_PROJECT_ID,
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY
         })
