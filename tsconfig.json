@@ -25,10 +25,13 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "transpileModule": true
   },
   "include": [
     "src/**/*"
-  ]
+  ],
+  "globals": {
+    "ts-jest": {
+      "isolatedModules": true
+    }
+  }
 }
