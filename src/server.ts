@@ -1,5 +1,6 @@
 import 'reflect-metadata';
-import express from 'express'
+import express from 'express';
+import dotenv from 'dotenv';
 import config from './config';
 import routes from './api/routes';
 import db from './config/db'
@@ -8,9 +9,11 @@ const admin = require('firebase-admin');
 
 function startServer() {
     const app = express();
-    const PORT = 8080
+    const PORT = 8080;
 
-    require('dotenv').config();
+    const envFound = dotenv.config();
+
+    dotenv.config({ path: process.env.CONFIG_PATH });
 
     app.use(express.json());
 
