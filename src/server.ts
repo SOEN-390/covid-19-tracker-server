@@ -13,6 +13,16 @@ function startServer() {
 
     app.use(express.json())
 
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY[0] === '-'
+                ? process.env.FIREBASE_ADMIN_PRIVATE_KEY
+                : JSON.parse(process.env.FIREBASE_ADMIN_PRIVATE_KEY),
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            projectId: process.env.FIREBASE_PROJECT_ID
+        })
+    });
+
     app.get('/', (req, res) => {
         res.send('Welcome to the COVID-19 Tracker App Server')
     });
@@ -24,16 +34,6 @@ function startServer() {
     app.use(config.api.prefix + config.api.version, routes());
 
     db();
-
-    admin.initializeApp({
-        credential: admin.credential.cert({
-            privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY[0] === '-'
-                            ? process.env.FIREBASE_ADMIN_PRIVATE_KEY
-                            : JSON.parse(process.env.FIREBASE_ADMIN_PRIVATE_KEY),
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            projectId: process.env.FIREBASE_PROJECT_ID
-        })
-    });
 }
 
 startServer();
