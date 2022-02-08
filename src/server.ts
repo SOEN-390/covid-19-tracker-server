@@ -29,7 +29,7 @@ function startServer() {
 
     admin.initializeApp({
         credential: admin.credential.cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
+            projectId: "cvoid-19-app",
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
             privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY
         })
