@@ -3,7 +3,8 @@ import express from 'express'
 import config from './config';
 import routes from './api/routes';
 import db from './config/db'
-import * as admin from 'firebase-admin';
+
+const admin = require('firebase-admin');
 
 function startServer() {
     const app = express();
@@ -30,8 +31,8 @@ function startServer() {
         credential: admin.credential.cert({
             privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        }),
-        projectId: process.env.FIREBASE_PROJECT_ID
+            projectId: process.env.FIREBASE_PROJECT_ID
+        })
     });
 }
 
