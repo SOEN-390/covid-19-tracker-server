@@ -1,5 +1,4 @@
 {
-    "preset": "ts-jest",
     "coverageDirectory": "./coverage",
     "collectCoverageFrom": ["./src/**/*",
                             "!**/node_modules/**"],
