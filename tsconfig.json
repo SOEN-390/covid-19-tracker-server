@@ -24,7 +24,7 @@
     /*Allow decorators*/
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"

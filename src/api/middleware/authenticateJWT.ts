@@ -1,6 +1,4 @@
-
-
-const admin = require('firebase-admin');
+import * as admin from 'firebase-admin';
 
 
 const authenticateJWT = async (req, res, next) => {

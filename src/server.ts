@@ -6,12 +6,12 @@ import db from './config/db'
 import * as admin from 'firebase-admin';
 
 function startServer() {
-    const app = express()
+    const app = express();
     const PORT = 8080
 
-    require('dotenv').config()
+    require('dotenv').config();
 
-    app.use(express.json())
+    app.use(express.json());
 
     admin.initializeApp({
         credential: admin.credential.cert({
