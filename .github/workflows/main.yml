@@ -33,4 +33,4 @@ jobs:
       run: docker-compose up
       
     - name: Run tests
-      run: docker exec covid-19-tracker-server npm run test
+      run: docker exec covid-19-tracker-server npm run test --verbose
