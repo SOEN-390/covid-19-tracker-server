@@ -25,7 +25,7 @@ jobs:
       env:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: |
-        echo $DEV_ENV
+        echo "$(cat $DEV_ENV)"
         echo $DEV_ENV > .env
         echo "$(cat .env)"
         
