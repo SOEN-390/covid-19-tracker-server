@@ -25,7 +25,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "transpileModule": true
   },
   "include": [
     "src/**/*"
