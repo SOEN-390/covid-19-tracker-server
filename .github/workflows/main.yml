@@ -23,7 +23,7 @@ jobs:
     # Create .env file
     - name: Create .env file
       env:
-        DEV_ENV: ${{ secrets.DEV_ENV_SECRET }}
+        DEV_ENV: ${{ secrets.DEV_ENV }}
       run: |
         echo "$(cat $DEV_ENV)"
         echo $DEV_ENV > .env
