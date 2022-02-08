@@ -24,16 +24,13 @@ jobs:
     - name: Create .env file
       env:
         DEV_ENV: ${{ secrets.DEV_ENV }}
-      run: |
-        echo "$(cat $DEV_ENV)"
-        echo $DEV_ENV | base64 --decode > .env
-        echo "$(cat .env)"
+      run: echo $DEV_ENV | base64 --decode > .env
         
     - name: Build
       run: docker-compose build
 
     - name: run the Docker containers
-      run: docker-compose up
+      run: docker-compose up -d
       
     - name: Run tests
       run: docker exec covid-19-tracker-server npm run test --verbose

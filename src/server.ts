@@ -12,7 +12,6 @@ function startServer() {
     const PORT = 8080;
 
     const envFound = dotenv.config();
-
     dotenv.config({ path: process.env.CONFIG_PATH });
 
     app.use(express.json());
@@ -27,11 +26,6 @@ function startServer() {
     });
 
     app.use(config.api.prefix + config.api.version, routes());
-
-    process.env.NODE_ENV = 'development';
-    console.log(process.env);
-
-
 
     db();
 
