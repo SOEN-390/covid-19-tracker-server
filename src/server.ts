@@ -3,12 +3,15 @@ import express from 'express'
 import config from './config';
 import routes from './api/index';
 import db from './config/db'
+import cors from 'cors';
 
 function startServer() {
     const app = express()
     const PORT = 8080
 
     require('dotenv').config()
+
+    app.use(cors());
 
     app.use(express.json())
 
