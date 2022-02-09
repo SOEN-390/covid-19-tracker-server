@@ -4,6 +4,7 @@ import config from './config';
 import routes from './api/index';
 import db from './config/db'
 import cors from 'cors';
+import bodyParser from "body-parser";
 
 function startServer() {
     const app = express()
@@ -13,7 +14,8 @@ function startServer() {
 
     app.use(cors());
 
-    app.use(express.json())
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended: true}));
 
     app.get('/', (req, res) => {
         res.send('Welcome to the COVID-19 Tracker App Server')
