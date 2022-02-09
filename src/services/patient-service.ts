@@ -1,5 +1,5 @@
 import {Container, Service} from "typedi";
-import {errors} from "celebrate";
+import {IPatientData} from "../interfaces/IPatient";
 
 
 @Service()
@@ -10,22 +10,15 @@ export default class PatientService {
     }
 
 
-    async helloWorld(): Promise<any> {
+    async createUser(userInfo: IPatientData): Promise<boolean> {
 
-        // example on how to interact with the database
         const db: any = Container.get('mysql');
-
-        await db.query("INSERT INTO Authority VALUES('helo@gmail.com', 'admin')");
+        const sql = `INSERT INTO User VALUES (?, ?, ?, ?, ?, ?)`
 
         return  new Promise((resolve, reject) => {
-            db.query("SELECT email FROM Authority WHERE privilege = 'admin';", (error, result) => {
-                if (error) {
-                    console.debug("ERROR:", error);
-                }
-                if (result) {
-                    console.debug("SUCCESS: ", result);
-                }
-                return error ? reject(error) : resolve(result);
+            db.query(sql, [userInfo.medicalId, userInfo.firstName,
+                userInfo.lastName, userInfo.phoneNumber, userInfo.address, userInfo.email], (error, result) => {
+                return error ? reject(error) : resolve(true);
             });
         });
 

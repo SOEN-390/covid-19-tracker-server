@@ -3,6 +3,7 @@ import {celebrate, Joi} from "celebrate";
 import PatientService from "../services/patient-service";
 import {Container} from "typedi";
 import {IUser} from "../interfaces/IUser";
+import {IPatientData} from "../interfaces/IPatient";
 
 const route = Router();
 
@@ -26,10 +27,9 @@ export default (app: Router) => {
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
         try {
-            console.log("USER: ", req.body as IUser);
             const patientServiceInstance = Container.get(PatientService);
-            const result = await patientServiceInstance.createUser(req.body as IUser);
-            return res.json(result);
+            const result = await patientServiceInstance.createUser(req.body as IPatientData);
+            res.send(result);
         } catch (e) {
             return next(e);
         }
