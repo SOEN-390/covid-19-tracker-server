@@ -1,17 +1,13 @@
 
 
 export interface IUser {
-    medicalId: string,
+    id: string,
     firstName: string,
     lastName: string,
-    testResults: testResult
     address: string
     email: string
     phoneNumber: string
 }
 
 
-export enum testResult {
-    POSITIVE  = "positive",
-    NEGATIVE = "negative"
-}
+
