@@ -9,7 +9,8 @@ export interface IPatientData {
 }
 
 export interface IPatient {
-    medicalId: string
+    medicalId: string,
+    testResult: testResult,
 }
 
 export interface IConfirmed {
