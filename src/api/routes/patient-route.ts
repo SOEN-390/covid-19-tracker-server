@@ -1,12 +1,12 @@
-import {Router, NextFunction} from "express";
+import {Router} from "express";
 import {celebrate, Joi} from "celebrate";
 import PatientService from "../../services/patient-service";
 import {Container} from "typedi";
 import middleware from "../middleware";
-import {IUser} from "../../interfaces/IUser";
 import {IPatientData} from "../../interfaces/IPatient";
 
 const route = Router();
+const admin = require('firebase-admin');
 
 const PATIENT_SCHEMA_MAP = {
     medicalId: Joi.string().required(),
@@ -27,7 +27,7 @@ export default (app: Router) => {
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
-        const userId = getIdFromToken(req.headers);
+        const userId = await getUserAuth(req.headers);
         const patientServiceInstance = Container.get(PatientService);
         patientServiceInstance.createUser(userId, req.body as IPatientData).then(() => {
             return res.status(200).end();
@@ -48,12 +48,10 @@ export default (app: Router) => {
             return next(e);
         }
     });
-
-
-
 }
 
-const getIdFromToken = (reqHeaders: any): string => {
+const getUserAuth = async (reqHeaders: any): Promise<string> => {
     let jwtToken = reqHeaders && reqHeaders.authorization ? reqHeaders.authorization.split(" ")[1] : '';
-    return jwtToken.idToken;
+    const data = await admin.auth().verifyIdToken(jwtToken);
+    return data.uid;
 }
