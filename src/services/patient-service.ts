@@ -9,7 +9,7 @@ export default class PatientService {
     constructor() {
     }
 
-    async createUser(userId, userInfo: IPatientData): Promise<void> {
+    async createUser(userId: string, userInfo: IPatientData): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO User VALUES (?, ?, ?, ?, ?, ?)'
         const user: IUser = this.getUserFromData(userInfo);
@@ -21,12 +21,13 @@ export default class PatientService {
                 if (error) {
                     return reject(error);
                 }
-                this.createPatient(patient).then(() => {
+                this.createPatient(userId ,patient).then(() => {
                     if (confirmed) {
                         this.createConfirmed({medicalId: userInfo.medicalId, flagged: false}).then(() => {
+                            return resolve();
                         }).catch((error) => {
                             return reject(error);
-                        })
+                        });
                     }
                     return;
                 }).catch((error) => {
@@ -36,22 +37,23 @@ export default class PatientService {
         });
     }
 
-    private async createPatient(patient: IPatient): Promise<boolean> {
+    private async createPatient(userId: string,patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
-        const sql = 'INSERT INTO Patient VALUES (?)'
+        const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
         return new Promise((resolve, reject) => {
-            db.query(sql, [patient], (error, result) => {
-                return error ? reject(error) : resolve(true);
+            db.query(sql, [patient.medicalId, userId, patient.testResult], (error, result) => {
+                return error ? reject(error) : resolve();
             });
         });
     }
 
-    private async createConfirmed(data: IConfirmed): Promise<boolean> {
+    private async createConfirmed(data: IConfirmed): Promise<void> {
         const db: any = Container.get('mysql');
-        const sql = 'INSERT INTO Patient VALUES (?, ?)'
+        const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
         return new Promise((resolve, reject) => {
-            db.query(sql, [data], (error, result) => {
-                return error ? reject(error) : resolve(true);
+            db.query(sql, [data.medicalId, data.flagged], (error, result) => {
+
+                return error ? reject(error) : resolve();
             });
         });
     }
@@ -63,6 +65,6 @@ export default class PatientService {
     }
 
     private getPatientFromData(userInfo: IPatientData): IPatient {
-        return {medicalId: userInfo.medicalId, };
+        return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
     }
 }
