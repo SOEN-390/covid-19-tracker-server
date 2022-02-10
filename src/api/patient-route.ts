@@ -26,13 +26,12 @@ export default (app: Router) => {
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
-        try {
             const patientServiceInstance = Container.get(PatientService);
-            const result = await patientServiceInstance.createUser(req.body as IPatientData);
-            res.send(result);
-        } catch (e) {
-            return next(e);
-        }
+            patientServiceInstance.createUser(req.body as IPatientData).then(() => {
+                return res.status(200).end();
+            }).catch((error) => {
+                return next(error);
+            });
     });
 
     route.get('/:id', celebrate({
