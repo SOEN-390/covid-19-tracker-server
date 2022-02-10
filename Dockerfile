@@ -5,8 +5,8 @@ ARG PORT
 # TypeScript
 RUN npm install -g typescript@latest
 
-RUN mkdir /code/
-WORKDIR /code/
+RUN mkdir /code
+WORKDIR /code
 
 COPY package.json .
 

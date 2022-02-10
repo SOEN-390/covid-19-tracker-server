@@ -27,6 +27,7 @@
     "celebrate": "^12.1.1",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
+    "firebase-admin": "^10.0.2",
     "mysql": "^2.18.1",
     "pusher": "^5.0.0",
     "reflect-metadata": "^0.1.13",

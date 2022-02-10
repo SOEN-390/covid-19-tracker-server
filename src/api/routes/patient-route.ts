@@ -2,6 +2,7 @@ import {Router, NextFunction} from "express";
 import {celebrate, Joi} from "celebrate";
 import PatientService from "../services/patient-service";
 import {Container} from "typedi";
+import middleware from "../middleware";
 import {IUser} from "../interfaces/IUser";
 import {IPatientData} from "../interfaces/IPatient";
 
@@ -22,6 +23,7 @@ export default (app: Router) => {
     app.use('/patients', route)
 
 
+
     route.post('/create', celebrate({
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
@@ -34,7 +36,7 @@ export default (app: Router) => {
             });
     });
 
-    route.get('/:id', celebrate({
+    route.get('/:id', middleware.authenticateJWT, celebrate({
         params: Joi.object({
             id: Joi.string().required()
         })
