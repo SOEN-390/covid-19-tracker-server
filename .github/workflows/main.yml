@@ -26,10 +26,10 @@ jobs:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: echo $DEV_ENV | base64 --decode > .env
         
-    - name: Build
+    - name: Build docker image
       run: docker-compose build
 
-    - name: run the Docker containers
+    - name: Run docker container
       run: docker-compose up -d
       
     - name: Run tests
