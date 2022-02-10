@@ -9,7 +9,7 @@ export default class PatientService {
     constructor() {
     }
 
-    async createUser(userInfo: IPatientData): Promise<void> {
+    async createUser(userId, userInfo: IPatientData): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO User VALUES (?, ?, ?, ?, ?, ?)'
         const user: IUser = this.getUserFromData(userInfo);
@@ -17,7 +17,7 @@ export default class PatientService {
         const confirmed = userInfo.testResult === testResult.POSITIVE;
 
         return new Promise((resolve, reject) => {
-            db.query(sql, [user.id, user.firstName, user.lastName, user.phoneNumber, user.address, user.email], (error, result) => {
+            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -57,7 +57,7 @@ export default class PatientService {
     }
 
     private getUserFromData(userInfo: IPatientData): IUser {
-        return { id:userInfo.medicalId, firstName: userInfo.firstName,
+        return { id:'', firstName: userInfo.firstName,
             lastName: userInfo.lastName, phoneNumber: userInfo.phoneNumber,
             address: userInfo.address, email: userInfo.email}
     }
