@@ -12,7 +12,7 @@ const PATIENT_SCHEMA_MAP = {
     medicalId: Joi.string().required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
-    testResults: Joi.string().required(),
+    testResult: Joi.string().required(),
     address: Joi.string().required(),
     email: Joi.string().required(),
     phoneNumber: Joi.string().required()
