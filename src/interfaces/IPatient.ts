@@ -13,10 +13,6 @@ export interface IPatient {
 }
 
 export interface IConfirmed {
-    medicalId: string
-}
-
-export interface IConfirmed {
     medicalId: string,
     flagged: boolean
 }
