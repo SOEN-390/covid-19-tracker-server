@@ -26,7 +26,7 @@ export default (app: Router) => {
     route.post('/create', middleware.authenticateJWT, celebrate({
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
-        console.debug("Calling get patient..");
+        console.debug("Calling create patient..");
         const userId = await getUserAuth(req.headers);
         const patientServiceInstance = Container.get(PatientService);
         patientServiceInstance.createUser(userId, req.body as IPatientData).then(() => {
@@ -36,17 +36,19 @@ export default (app: Router) => {
         });
     });
 
-    route.get('/:id', middleware.authenticateJWT, celebrate({
+    route.get('/:medicalId', middleware.authenticateJWT, celebrate({
         params: Joi.object({
-            id: Joi.string().required()
+        medicalId: Joi.string().required()
         })
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
-        try {
-
-        } catch (e) {
-            return next(e);
-        }
+        const userId = await getUserAuth(req.headers);
+        const patientServiceInstance = Container.get(PatientService);
+        patientServiceInstance.getPatientWithId(userId,req.params.medicalId).then((patient) => {
+            return res.json(patient);
+        }).catch((error) => {
+            return next(error);
+        })
     });
 }
 

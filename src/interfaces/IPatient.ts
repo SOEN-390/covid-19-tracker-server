@@ -13,6 +13,12 @@ export interface IPatient {
     testResult: testResult,
 }
 
+export interface IPatientReturnData {
+    firstName: string,
+    lastName: string,
+    testResult: testResult
+}
+
 export interface IConfirmed {
     medicalId: string,
     flagged: boolean
