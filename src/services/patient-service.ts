@@ -68,7 +68,7 @@ export default class PatientService {
         return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
     }
 
-    public async getpatientwithId(userId: string,medicalId: string){
+    public async getPatientWithId(userId: string,medicalId: string){
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM user WHERE id=?';
         db.query(sql,userId, (error,result)=> {

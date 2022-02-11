@@ -45,7 +45,7 @@ export default (app: Router) => {
         try {
             const userId = await getUserAuth(req.headers);
             const patientServiceInstance = Container.get(PatientService);
-            const response = await patientServiceInstance.getpatientwithId(userId,req.params.medicalId)
+            const response = await patientServiceInstance.getPatientWithId(userId,req.params.medicalId)
         } catch (e) {
             return next(e);
         }
