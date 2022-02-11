@@ -5,11 +5,11 @@ services:
     image: covid-19-tracker-server
     command: npm start
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    env_file:
-      - ./.env
+    volumes:
+      - ./.env:/code/.env
 
 
