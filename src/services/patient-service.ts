@@ -67,4 +67,17 @@ export default class PatientService {
     private getPatientFromData(userInfo: IPatientData): IPatient {
         return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
     }
+
+    public async getpatientwithId(userId: string,medicalId: string){
+        const db: any = Container.get('mysql');
+        const sql = 'SELECT * FROM user WHERE id=?';
+        db.query(sql,userId, (error,result)=> {
+            if(!error){
+                const sql = 'SELECT * FROM patient WHERE medicalId=?';
+                db.query(sql,medicalId, (error,result)=>{
+                    
+                })
+            }
+        })
+    }
 }

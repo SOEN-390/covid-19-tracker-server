@@ -36,14 +36,16 @@ export default (app: Router) => {
         });
     });
 
-    route.get('/:id', middleware.authenticateJWT, celebrate({
+    route.get('/:medicalId', middleware.authenticateJWT, celebrate({
         params: Joi.object({
-            id: Joi.string().required()
+        medicalId: Joi.string().required()
         })
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
         try {
-
+            const userId = await getUserAuth(req.headers);
+            const patientServiceInstance = Container.get(PatientService);
+            const response = await patientServiceInstance.getpatientwithId(userId,req.params.medicalId)
         } catch (e) {
             return next(e);
         }
