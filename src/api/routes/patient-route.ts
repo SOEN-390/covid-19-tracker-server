@@ -42,13 +42,13 @@ export default (app: Router) => {
         })
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
-        try {
-            const userId = await getUserAuth(req.headers);
-            const patientServiceInstance = Container.get(PatientService);
-            const response = await patientServiceInstance.getPatientWithId(userId,req.params.medicalId)
-        } catch (e) {
-            return next(e);
-        }
+        const userId = await getUserAuth(req.headers);
+        const patientServiceInstance = Container.get(PatientService);
+        patientServiceInstance.getPatientWithId(userId,req.params.medicalId).then((patient) => {
+            return res.json(patient);
+        }).catch((error) => {
+            return next(error);
+        })
     });
 }
 

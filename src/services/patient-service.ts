@@ -67,16 +67,16 @@ export default class PatientService {
         return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
     }
 
-    public async getPatientWithId(userId: string,medicalId: string){
+    public async getPatientWithId(userId: string,medicalId: string): Promise<IPatient>{
         const db: any = Container.get('mysql');
         return new Promise((resolve, reject) => {
             this.verifyUser(userId).then(() => {
                 const sql = 'SELECT * FROM Patient WHERE medicalId=?';
                 db.query(sql,medicalId, (error,result)=>{
-                    console.log("HELO: ", result);
+                    return resolve({medicalId: result[0].medicalId, testResult: result[0].testResult});
                 });
             }).catch((error) => {
-                console.log("ERROR: ", error);
+                return reject(error);
             })
 
         });
