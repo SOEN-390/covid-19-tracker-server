@@ -26,7 +26,7 @@ export default (app: Router) => {
     route.post('/create', middleware.authenticateJWT, celebrate({
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
-        console.debug("Calling get patient..");
+        console.debug("Calling create patient..");
         const userId = await getUserAuth(req.headers);
         const patientServiceInstance = Container.get(PatientService);
         patientServiceInstance.createUser(userId, req.body as IPatientData).then(() => {

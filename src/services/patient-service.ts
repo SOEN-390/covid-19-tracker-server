@@ -52,7 +52,6 @@ export default class PatientService {
         const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
         return new Promise((resolve, reject) => {
             db.query(sql, [data.medicalId, data.flagged], (error, result) => {
-
                 return error ? reject(error) : resolve();
             });
         });
@@ -70,14 +69,27 @@ export default class PatientService {
 
     public async getPatientWithId(userId: string,medicalId: string){
         const db: any = Container.get('mysql');
-        const sql = 'SELECT * FROM user WHERE id=?';
-        db.query(sql,userId, (error,result)=> {
-            if(!error){
-                const sql = 'SELECT * FROM patient WHERE medicalId=?';
+        return new Promise((resolve, reject) => {
+            this.verifyUser(userId).then(() => {
+                const sql = 'SELECT * FROM Patient WHERE medicalId=?';
                 db.query(sql,medicalId, (error,result)=>{
-                    
-                })
-            }
+                    console.log("HELO: ", result);
+                });
+            }).catch((error) => {
+                console.log("ERROR: ", error);
+            })
+
+        });
+    }
+
+    // To be used for almost all functions to verify the requester user exists in our db
+    private async verifyUser(userId: string): Promise<void> {
+        const db: any = Container.get('mysql');
+        const sql = 'SELECT * FROM User WHERE id=?';
+        return new Promise((resolve, reject) => {
+            db.query(sql,userId, (error,result)=> {
+                return error ? reject(error) : resolve();
+            });
         })
     }
 }
