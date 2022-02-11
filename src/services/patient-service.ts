@@ -1,5 +1,5 @@
 import {Container, Service} from "typedi";
-import {IConfirmed, IPatient, IPatientData, testResult} from "../interfaces/IPatient";
+import {IConfirmed, IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
 import {IUser} from "../interfaces/IUser";
 
 
@@ -67,18 +67,20 @@ export default class PatientService {
         return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
     }
 
-    public async getPatientWithId(userId: string,medicalId: string): Promise<IPatient>{
+    public async getPatientWithId(userId: string,medicalId: string): Promise<IPatientReturnData>{
         const db: any = Container.get('mysql');
         return new Promise((resolve, reject) => {
             this.verifyUser(userId).then(() => {
-                const sql = 'SELECT * FROM Patient WHERE medicalId=?';
+                const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
+                    'WHERE User.id = Patient.userId AND medicalId=?';
                 db.query(sql,medicalId, (error,result)=>{
-                    return resolve({medicalId: result[0].medicalId, testResult: result[0].testResult});
+                    return resolve({firstName: result[0].firstName,
+                        lastName: result[0].lastName,
+                        testResult: result[0].testResult});
                 });
             }).catch((error) => {
                 return reject(error);
             })
-
         });
     }
 
