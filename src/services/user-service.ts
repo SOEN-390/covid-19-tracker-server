@@ -49,7 +49,9 @@ export default class UserService {
                         return resolve(user);
                     }
                 } catch (e) {
+                    // A user but not found in any type tables.
                     console.log("Not a Patient");
+                    return reject(e);
                 }
             });
         });
