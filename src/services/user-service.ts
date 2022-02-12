@@ -45,14 +45,17 @@ export default class UserService {
         const sql = 'SELECT privilege FROM Authority WHERE id = ?';
         return new Promise((resolve, reject) => {
             db.query(sql, userId, (error, result) => {
-                return error ? reject(error) : resolve(result[0].privilege);
+                if (error || result?.length === 0) {
+                    return reject(error);
+                }
+                return resolve(result[0].privilege);
             });
         });
     }
 
     async getPatient(userId: string): Promise<testResult> {
         const db: any = Container.get('mysql');
-        const sql = 'SELECT testResult FROM User WHERE id = ?';
+        const sql = 'SELECT testResult FROM Patient WHERE userId = ?';
         return new Promise((resolve, reject) => {
             db.query(sql, userId, (error, result) => {
                 return error ? reject(error) : resolve(result[0].testResult);
@@ -66,7 +69,10 @@ export default class UserService {
         const sql = 'SELECT * FROM Doctor WHERE id = ?';
         return new Promise((resolve, reject) => {
             db.query(sql, userId, (error, result) => {
-                return error ? reject(error) : resolve();
+                if (error || result?.length === 0) {
+                    return reject(error);
+                }
+                return resolve();
             });
         });
     }
