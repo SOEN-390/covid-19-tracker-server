@@ -10,7 +10,7 @@ export default class UserService {
     }
 
     async getUser(userId: string): Promise<IUserReturnData> {
-        let user = { } as IUserReturnData;
+        let user = {} as IUserReturnData;
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise((resolve, reject) => {
@@ -32,15 +32,15 @@ export default class UserService {
                 } catch (e) {
                     console.log("Not an Authority");
                 }
-               try {
-                   const success = await this.getDoctor(userId);
-                   if (success) {
-                       user.role = 'doctor';
-                       return resolve(user);
-                   }
-               } catch (e) {
-                   console.log("Not a Doctor");
-               }
+                try {
+                    const success = await this.getDoctor(userId);
+                    if (success) {
+                        user.role = 'doctor';
+                        return resolve(user);
+                    }
+                } catch (e) {
+                    console.log("Not a Doctor");
+                }
                 try {
                     const testResult = await this.getPatient(userId);
                     if (testResult) {

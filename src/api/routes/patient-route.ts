@@ -4,9 +4,10 @@ import PatientService from "../../services/patient-service";
 import {Container} from "typedi";
 import middleware from "../middleware";
 import {IPatientData} from "../../interfaces/IPatient";
+import {getUserAuth} from "../middleware/userAuthData";
 
 const route = Router();
-const admin = require('firebase-admin');
+
 
 const PATIENT_SCHEMA_MAP = {
     medicalId: Joi.string().required(),
@@ -27,7 +28,7 @@ export default (app: Router) => {
         body: Joi.object(PATIENT_SCHEMA_MAP)
     }), async (req, res, next) => {
         console.debug("Calling create patient..");
-        const userId = await getUserAuth(req.headers);
+        const userId = getUserAuth(req.headers).user_id;
         const patientServiceInstance = Container.get(PatientService);
         patientServiceInstance.createUser(userId, req.body as IPatientData).then(() => {
             return res.status(200).end();
@@ -38,13 +39,13 @@ export default (app: Router) => {
 
     route.get('/:medicalId', middleware.authenticateJWT, celebrate({
         params: Joi.object({
-        medicalId: Joi.string().required()
+            medicalId: Joi.string().required()
         })
     }), async (req, res, next) => {
         console.debug("Calling get patient..");
-        const userId = await getUserAuth(req.headers);
+        const userId = getUserAuth(req.headers).user_id;
         const patientServiceInstance = Container.get(PatientService);
-        patientServiceInstance.getPatientWithId(userId,req.params.medicalId).then((patient) => {
+        patientServiceInstance.getPatientWithId(userId, req.params.medicalId).then((patient) => {
             return res.json(patient);
         }).catch((error) => {
             return next(error);
@@ -52,8 +53,3 @@ export default (app: Router) => {
     });
 }
 
-const getUserAuth = async (reqHeaders: any): Promise<string> => {
-    let jwtToken = reqHeaders && reqHeaders.authorization ? reqHeaders.authorization.split(" ")[1] : '';
-    const data = await admin.auth().verifyIdToken(jwtToken);
-    return data.uid;
-}
