@@ -1,8 +1,6 @@
 import {Router} from "express";
 import middleware from "../middleware";
-import {celebrate, Joi} from "celebrate";
 import {Container} from "typedi";
-import PatientService from "../../services/patient-service";
 import UserService from "../../services/user-service";
 
 const route = Router();
