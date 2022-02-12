@@ -14,7 +14,7 @@ export default class UserService {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise((resolve, reject) => {
-            db.query(sql, userId, (error,result)=> {
+            db.query(sql, userId, async (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -23,19 +23,34 @@ export default class UserService {
                 user.address = result[0].address;
                 user.email = result[0].email;
                 user.phoneNumber = result[0].phoneNumber;
-                this.getAuthority(userId).then((privilege) => {
-                    user.role = privilege;
-                    return resolve(user);
-                }).catch((error) => {});
-                this.getDoctor(userId).then(() => {
-                    user.role = 'doctor';
-                    return resolve(user);
-                }).catch((error) => {});
-                this.getPatient((userId)).then((testResult) => {
-                    user.testResult = testResult;
-                    user.role = 'patient';
-                    return resolve(user);
-                }).catch((error) => {});
+                try {
+                    const privilege = await this.getAuthority(userId);
+                    if (privilege) {
+                        user.role = privilege;
+                        return resolve(user);
+                    }
+                } catch (e) {
+                    console.log("Not an Authority");
+                }
+               try {
+                   const success = await this.getDoctor(userId);
+                   if (success) {
+                       user.role = 'doctor';
+                       return resolve(user);
+                   }
+               } catch (e) {
+                   console.log("Not a Doctor");
+               }
+                try {
+                    const testResult = await this.getPatient(userId);
+                    if (testResult) {
+                        user.testResult = testResult;
+                        user.role = 'patient';
+                        return resolve(user);
+                    }
+                } catch (e) {
+                    console.log("Not a Patient");
+                }
             });
         });
     }
@@ -64,7 +79,7 @@ export default class UserService {
 
     }
 
-    async getDoctor(userId: string): Promise<void> {
+    async getDoctor(userId: string): Promise<boolean> {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM Doctor WHERE id = ?';
         return new Promise((resolve, reject) => {
@@ -72,7 +87,7 @@ export default class UserService {
                 if (error || result?.length === 0) {
                     return reject(error);
                 }
-                return resolve();
+                return resolve(true);
             });
         });
     }
