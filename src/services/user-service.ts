@@ -10,7 +10,7 @@ export default class UserService {
     }
 
     async getUser(userId: string): Promise<IUserReturnData> {
-        let user: IUserReturnData;
+        let user = { } as IUserReturnData;
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise((resolve, reject) => {
