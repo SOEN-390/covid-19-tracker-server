@@ -37,6 +37,18 @@ export default (app: Router) => {
         });
     });
 
+    route.get('/all', middleware.authenticateJWT, async (req, res, next) => {
+        console.debug("Calling get all..");
+        const userId = getUserAuth(req.headers).user_id;
+        const patientServiceInstance = Container.get(PatientService);
+        patientServiceInstance.getPatients(userId).then((patient) => {
+            return res.json(patient);
+        }).catch((error) => {
+            return next(error);
+        })
+    });
+
+
     route.get('/:medicalId', middleware.authenticateJWT, celebrate({
         params: Joi.object({
             medicalId: Joi.string().required()
@@ -51,5 +63,10 @@ export default (app: Router) => {
             return next(error);
         })
     });
+
+
+    
 }
+
+
 
