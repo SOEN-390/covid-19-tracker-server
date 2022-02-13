@@ -42,6 +42,15 @@ export default class UserService {
                     console.log("Not a Doctor");
                 }
                 try {
+                    const privilege = await this.getAdmin(userId);
+                    if (privilege) {
+                        user.role = 'admin';
+                        return resolve(user);
+                    }
+                } catch (e) {
+                    console.log("Not an Admin");
+                }
+                try {
                     const testResult = await this.getPatient(userId);
                     if (testResult) {
                         user.testResult = testResult;
@@ -66,6 +75,19 @@ export default class UserService {
                     return reject(error);
                 }
                 return resolve(result[0].privilege);
+            });
+        });
+    }
+
+    async getAdmin (userId: string): Promise<boolean> {
+        const db: any = Container.get('mysql');
+        const sql = 'SELECT idAdmin FROM Admin WHERE idAdmin = ?';
+        return new Promise((resolve, reject) => {
+            db.query(sql, userId, (error, result) => {
+                if (error || result?.length === 0) {
+                    return reject(error);
+                }
+                return resolve(true);
             });
         });
     }
