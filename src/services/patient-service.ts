@@ -17,27 +17,30 @@ export default class PatientService {
         const confirmed = userInfo.testResult === testResult.POSITIVE;
 
         return new Promise((resolve, reject) => {
-            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email], (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                this.createPatient(userId ,patient).then(() => {
-                    if (confirmed) {
-                        this.createConfirmed({medicalId: userInfo.medicalId, flagged: false}).then(() => {
-                            return resolve();
-                        }).catch((error) => {
-                            return reject(error);
-                        });
+            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email],
+                async (error, result) => {
+                    if (error) {
+                        return reject(error);
                     }
-                    return;
-                }).catch((error) => {
-                        return reject(error)
+                    try {
+                        await this.createPatient(userId, patient);
+                    } catch (e) {
+                        return reject(e);
+                    }
+                    if (!confirmed) {
+                        return resolve();
+                    }
+                    try {
+                        await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+                        return resolve();
+                    } catch (e) {
+                        return reject(e);
+                    }
                 });
-            });
         });
     }
 
-    private async createPatient(userId: string,patient: IPatient): Promise<void> {
+    private async createPatient(userId: string, patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
         return new Promise((resolve, reject) => {
@@ -58,25 +61,29 @@ export default class PatientService {
     }
 
     private getUserFromData(userInfo: IPatientData): IUser {
-        return { id:'', firstName: userInfo.firstName,
+        return {
+            id: '', firstName: userInfo.firstName,
             lastName: userInfo.lastName, phoneNumber: userInfo.phoneNumber,
-            address: userInfo.address, email: userInfo.email}
+            address: userInfo.address, email: userInfo.email
+        }
     }
 
     private getPatientFromData(userInfo: IPatientData): IPatient {
-        return {medicalId: userInfo.medicalId, testResult: userInfo.testResult };
+        return {medicalId: userInfo.medicalId, testResult: userInfo.testResult};
     }
 
-    public async getPatientWithId(userId: string,medicalId: string): Promise<IPatientReturnData>{
+    public async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
         const db: any = Container.get('mysql');
         return new Promise((resolve, reject) => {
             this.verifyUser(userId).then(() => {
                 const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
                     'WHERE User.id = Patient.userId AND medicalId=?';
-                db.query(sql,medicalId, (error,result)=>{
-                    return resolve({firstName: result[0].firstName,
+                db.query(sql, medicalId, (error, result) => {
+                    return resolve({
+                        firstName: result[0].firstName,
                         lastName: result[0].lastName,
-                        testResult: result[0].testResult});
+                        testResult: result[0].testResult
+                    });
                 });
             }).catch((error) => {
                 return reject(error);
@@ -89,7 +96,7 @@ export default class PatientService {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise((resolve, reject) => {
-            db.query(sql,userId, (error,result)=> {
+            db.query(sql, userId, (error, result) => {
                 return error ? reject(error) : resolve();
             });
         })
