@@ -79,15 +79,15 @@ export default class UserService {
         });
     }
 
-    async getAdmin (userId: string): Promise<boolean> {
+    async getAdmin (userId: string): Promise<string> {
         const db: any = Container.get('mysql');
-        const sql = 'SELECT idAdmin FROM Admin WHERE idAdmin = ?';
+        const sql = 'SELECT privilege FROM Authority WHERE id = ?';
         return new Promise((resolve, reject) => {
             db.query(sql, userId, (error, result) => {
                 if (error || result?.length === 0) {
                     return reject(error);
                 }
-                return resolve(true);
+                return resolve(result[0].privilege);
             });
         });
     }
