@@ -21,7 +21,6 @@ export default class UserService {
                 if (!result[0]) {
                     return reject(new Error('User not found'));
                 }
-
                 user.firstName = result[0].firstName;
                 user.lastName = result[0].lastName;
                 user.address = result[0].address;
