@@ -19,6 +19,7 @@ export default class PatientService {
         return new Promise((resolve, reject) => {
             db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email],
                 async (error, result) => {
+                console.log("HELLOO");
                     if (error) {
                         return reject(error);
                     }
@@ -40,7 +41,7 @@ export default class PatientService {
         });
     }
 
-    private async createPatient(userId: string, patient: IPatient): Promise<void> {
+    async createPatient(userId: string, patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
         return new Promise((resolve, reject) => {
@@ -50,7 +51,7 @@ export default class PatientService {
         });
     }
 
-    private async createConfirmed(data: IConfirmed): Promise<void> {
+    async createConfirmed(data: IConfirmed): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
         return new Promise((resolve, reject) => {
@@ -60,7 +61,7 @@ export default class PatientService {
         });
     }
 
-    private getUserFromData(userInfo: IPatientData): IUser {
+    getUserFromData(userInfo: IPatientData): IUser {
         return {
             id: '', firstName: userInfo.firstName,
             lastName: userInfo.lastName, phoneNumber: userInfo.phoneNumber,
@@ -68,11 +69,11 @@ export default class PatientService {
         }
     }
 
-    private getPatientFromData(userInfo: IPatientData): IPatient {
+    getPatientFromData(userInfo: IPatientData): IPatient {
         return {medicalId: userInfo.medicalId, testResult: userInfo.testResult};
     }
 
-    public async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
+    async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
         const db: any = Container.get('mysql');
         return new Promise((resolve, reject) => {
             this.verifyUser(userId).then(() => {
@@ -92,7 +93,7 @@ export default class PatientService {
     }
 
     // To be used for almost all functions to verify the requester user exists in our db
-    private async verifyUser(userId: string): Promise<void> {
+    async verifyUser(userId: string): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise((resolve, reject) => {
