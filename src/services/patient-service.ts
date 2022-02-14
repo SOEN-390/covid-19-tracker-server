@@ -2,7 +2,6 @@ import {Container, Service} from "typedi";
 import {IConfirmed, IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
 import {IUser} from "../interfaces/IUser";
 
-
 @Service()
 export default class PatientService {
 
@@ -16,28 +15,26 @@ export default class PatientService {
         const patient: IPatient = this.getPatientFromData(userInfo);
         const confirmed = userInfo.testResult === testResult.POSITIVE;
 
-        return new Promise((resolve, reject) => {
-            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email],
-                async (error, result) => {
-                console.log("HELLOO");
-                    if (error) {
-                        return reject(error);
-                    }
-                    try {
-                        await this.createPatient(userId, patient);
-                    } catch (e) {
-                        return reject(e);
-                    }
-                    if (!confirmed) {
-                        return resolve();
-                    }
-                    try {
-                        await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
-                        return resolve();
-                    } catch (e) {
-                        return reject(e);
-                    }
-                });
+        return new Promise(async (resolve, reject) => {
+            const result: any = await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
+            console.log(result);
+            if (result.error) {
+                return reject(result.error);
+            }
+            try {
+                await this.createPatient(userId, patient);
+            } catch (e) {
+                return reject(e);
+            }
+            if (!confirmed) {
+                return resolve();
+            }
+            try {
+                await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+                return resolve();
+            } catch (e) {
+                return reject(e);
+            }
         });
     }
 

@@ -1,11 +1,8 @@
 import PatientService from "../src/services/patient-service";
 import {Container} from "typedi";
 import {testResult} from "../src/interfaces/IPatient";
-import mysql from 'mysql'
-import {callbackify} from "util";
 
 describe('Patient service unit-test', () => {
-
 
     let userId;
     let testPatientData;
@@ -14,6 +11,7 @@ describe('Patient service unit-test', () => {
     let testUser;
 
     let patientService: PatientService;
+    let mysql;
 
     beforeEach(() => {
 
@@ -43,20 +41,24 @@ describe('Patient service unit-test', () => {
             flagged: false
         }
 
-        patientService = new PatientService();
-        Container.set(PatientService, patientService);
+        let Mysql = jest.fn(() => ({
+            query: jest.fn(async () => { return Object})
+        }));
 
-
-        mysql.query = jest.fn(() => callbackify(args));
+        mysql = new Mysql();
 
         Container.set('mysql', mysql);
+
+        patientService = new PatientService();
+        Container.set(PatientService, patientService);
 
     });
 
     describe("Create User", () => {
 
         test('create user', async () => {
-            await expect(patientService.createUser(userId, testPatientData)).resolves.toThrowError()
+
+            expect(await patientService.createUser(userId, testPatientData)).not.toThrowError();
         });
 
     });
