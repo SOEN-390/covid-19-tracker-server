@@ -13,6 +13,8 @@ describe('Patient service unit-test', () => {
     let patientService: PatientService;
     let mysql;
 
+    let rows;
+
     beforeEach(() => {
 
         userId = '1234';
@@ -41,8 +43,11 @@ describe('Patient service unit-test', () => {
             flagged: false
         }
 
+        rows = [{firstName: 'demo',
+            lastName: 'user', testResult: testResult.POSITIVE}];
+
         let Mysql = jest.fn(() => ({
-            query: jest.fn().mockReturnValue([])
+            query: jest.fn().mockReturnValue([rows])
         }));
 
         mysql = new Mysql();
@@ -72,13 +77,14 @@ describe('Patient service unit-test', () => {
     describe("Get Patient with Medical ID", () => {
 
 
-        test('get patient with id', () => {
+        test('get patient with id', async () => {
+            let profile = await patientService.getPatientWithId(userId, testPatientData.medicalId);
+            expect(profile).toEqual({firstName: 'demo',
+                lastName: 'user', testResult: testResult.POSITIVE});
 
         });
 
-        test('verify user', () => {
 
-        });
 
     });
 
