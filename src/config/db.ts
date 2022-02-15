@@ -3,7 +3,7 @@ import {Container} from "typedi";
 
 export default () => {
 
-    const mysql = require('mysql');
+    const mysql = require('promise-mysql2');
 
     const pool = mysql.createPool({
         host: process.env.RDS_HOSTNAME,
