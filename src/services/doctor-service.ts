@@ -14,7 +14,7 @@ export default class DoctorService {
         const db: any = Container.get('mysql');
         return new Promise(( resolve, reject) => {
             this.verifyUser(userId).then(() => {
-                const sql = 'SELECT * FROM User, Doctor WHERE User.id = Doctor.id';
+                const sql = 'SELECT firstName, lastName, licenseId, phoneNumber, address, email FROM User, Doctor WHERE User.id = Doctor.id';
                 db.query(sql, (error, result) => 
                 {
                     result.forEach(doctor => {
