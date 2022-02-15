@@ -16,45 +16,52 @@ export default class PatientService {
         const confirmed = userInfo.testResult === testResult.POSITIVE;
 
         return new Promise(async (resolve, reject) => {
-            const result: any = await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
-            console.log(result);
-            if (result.error) {
-                return reject(result.error);
-            }
             try {
-                await this.createPatient(userId, patient);
-            } catch (e) {
-                return reject(e);
+                await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
+                try {
+                    await this.createPatient(userId, patient);
+                } catch (e) {
+                    return reject(e);
+                }
+                if (!confirmed) {
+                    return resolve();
+                }
+                try {
+                    await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+                    return resolve();
+                } catch (e) {
+                    return reject(e);
+                }
+            } catch (error) {
+                return reject(error);
             }
-            if (!confirmed) {
-                return resolve();
-            }
-            try {
-                await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
-                return resolve();
-            } catch (e) {
-                return reject(e);
-            }
+
         });
     }
 
     async createPatient(userId: string, patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
-        return new Promise((resolve, reject) => {
-            db.query(sql, [patient.medicalId, userId, patient.testResult], (error, result) => {
-                return error ? reject(error) : resolve();
-            });
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.query(sql, [patient.medicalId, userId, patient.testResult]);
+                return resolve();
+            } catch (error) {
+                return reject(error);
+            }
         });
     }
 
     async createConfirmed(data: IConfirmed): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
-        return new Promise((resolve, reject) => {
-            db.query(sql, [data.medicalId, data.flagged], (error, result) => {
-                return error ? reject(error) : resolve();
-            });
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.query(sql, [data.medicalId, data.flagged]);
+                return resolve();
+            } catch (error) {
+                return reject(error);
+            }
         });
     }
 
