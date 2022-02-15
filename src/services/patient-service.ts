@@ -2,6 +2,7 @@ import {Container, Service} from "typedi";
 import {IConfirmed, IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
 import {IUser} from "../interfaces/IUser";
 
+
 @Service()
 export default class PatientService {
 
@@ -79,20 +80,23 @@ export default class PatientService {
 
     async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
         const db: any = Container.get('mysql');
-        return new Promise((resolve, reject) => {
-            this.verifyUser(userId).then(() => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await this.verifyUser(userId);
                 const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
                     'WHERE User.id = Patient.userId AND medicalId=?';
-                db.query(sql, medicalId, (error, result) => {
-                    return resolve({
-                        firstName: result[0].firstName,
-                        lastName: result[0].lastName,
-                        testResult: result[0].testResult
-                    });
+                const [rows] = await db.query(sql, medicalId);
+                if (rows.length === 0) {
+                    return reject(new Error('User does not exist'));
+                }
+                return resolve({
+                    firstName: rows[0].firstName,
+                    lastName: rows[0].lastName,
+                    testResult: rows[0].testResult
                 });
-            }).catch((error) => {
+            } catch (error) {
                 return reject(error);
-            })
+            }
         });
     }
 
@@ -100,10 +104,13 @@ export default class PatientService {
     async verifyUser(userId: string): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
-        return new Promise((resolve, reject) => {
-            db.query(sql, userId, (error, result) => {
-                return error ? reject(error) : resolve();
-            });
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.query(sql, userId);
+                return resolve();
+            } catch (e) {
+                return reject(e);
+            }
         })
     }
 }
