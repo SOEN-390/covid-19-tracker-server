@@ -1,93 +1,112 @@
 import {testResult} from "../src/interfaces/IPatient";
+import UserService from "../src/services/user-service";
+import {Container} from "typedi";
 
 
 describe('User service unit-test', () => {
 
     let userId;
-    let testPatient;
-    let testDoctor;
-    let testImmigrationOfficer;
-    let testAdmin;
-    let testHealthOfficial;
 
-    beforeEach(() => {
+    let userService: UserService;
+    let mysql;
+
+    beforeAll(() => {
 
         userId = '1234';
 
-        testPatient = {
-            firstName: 'demo',
-            lastName: 'patient',
-            address: 'boul. demo',
-            email: 'demo@demo.com',
-            phoneNumber: '000-000-0000',
-            testResult: testResult.POSITIVE,
-            role: 'patient'
-        }
-
-        testDoctor = {
-            firstName: 'demo',
-            lastName: 'doctor',
-            address: 'boul. demo',
-            email: 'doctor@demo.com',
-            phoneNumber: '000-000-0000',
-            role: 'doctor'
-        }
-
-        testImmigrationOfficer = {
-            firstName: 'demo',
-            lastName: 'officer',
-            address: 'boul. demo',
-            email: 'immigration@demo.com',
-            phoneNumber: '000-000-0000',
-            role: 'immigration_officer'
-        }
-
-        testAdmin = {
-            firstName: 'demo',
-            lastName: 'admin',
-            address: 'boul. demo',
-            email: 'admin@demo.com',
-            phoneNumber: '000-000-0000',
-            role: 'admin'
-        }
-
-        testHealthOfficial = {
-            firstName: 'demo',
-            lastName: 'official',
-            address: 'boul. demo',
-            email: 'official@demo.com',
-            phoneNumber: '000-000-0000',
-            role: 'health_official'
-        }
-
+        userService = new UserService();
+        Container.set(UserService, userService);
 
     });
 
-    describe('Get User with UserID (token)', () => {
+    describe('User Not found', () => {
 
-        test('get admin',  () => {
+        beforeEach(() => {
 
+            let Mysql = jest.fn(() => ({
+                query: jest.fn().mockReturnValue([[]])
+            }));
+
+            mysql = new Mysql();
+            Container.set('mysql', mysql);
         });
 
-        test('get immigration officer',  () => {
+        test('User does not exist error', async () => {
+            try {
+                await userService.getUser(userId)
+            }
+            catch (error) {
+                expect(error).toEqual(new Error('User does not exist'));
+            }
 
         });
-
-        test('get health official',  () => {
-
-        });
-
-        test('get doctor',  () => {
-
-        });
-
-        test('get patient',  () => {
-
-        });
-
     });
 
 
+    describe('Get Authority', () => {
+
+        beforeEach(() => {
+            let rows = [{privilege: 'admin'}];
+            let Mysql = jest.fn(() => ({
+                query: jest.fn().mockReturnValue([rows])
+            }));
+
+            mysql = new Mysql();
+            Container.set('mysql', mysql);
+        });
+
+
+        test('get admin',  async () => {
+            let privilege = await userService.getAuthority(userId);
+            expect(privilege).toBe('admin');
+
+        });
+    });
+
+    describe('Get Patient', () => {
+
+        beforeEach(() => {
+            let rows = [{testResult: testResult.POSITIVE}]
+            let Mysql = jest.fn(() => ({
+                query: jest.fn().mockReturnValue([rows])
+            }));
+
+            mysql = new Mysql();
+            Container.set('mysql', mysql);
+        });
+
+
+        test('get patient',  async () => {
+            let testResult = await userService.getPatient(userId);
+            expect(testResult).toBe('positive');
+
+        });
+    });
+
+    describe('Get Doctor', () => {
+
+        beforeEach(() => {
+            let rows = [{firstName: 'doctor'}];
+            let Mysql = jest.fn(() => ({
+                query: jest.fn().mockReturnValue([rows])
+            }));
+
+            mysql = new Mysql();
+            Container.set('mysql', mysql);
+        });
+
+
+        test('get doctor',  async () => {
+            try {
+                await userService.getDoctor(userId)
+            } catch (e) {
+                expect(e).toBeNaN();
+            }
+
+        });
+
+
+    });
 
 
 });

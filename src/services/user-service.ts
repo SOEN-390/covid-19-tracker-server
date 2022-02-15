@@ -99,5 +99,5 @@ export default class UserService {
             }
         });
     }
-    
+
 }
