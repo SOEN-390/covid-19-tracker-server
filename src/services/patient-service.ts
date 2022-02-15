@@ -17,23 +17,26 @@ export default class PatientService {
         const confirmed = userInfo.testResult === testResult.POSITIVE;
 
         return new Promise((resolve, reject) => {
-            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email], (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                this.createPatient(userId, patient).then(() => {
-                    if (confirmed) {
-                        this.createConfirmed({medicalId: userInfo.medicalId, flagged: false}).then(() => {
-                            return resolve();
-                        }).catch((error) => {
-                            return reject(error);
-                        });
+            db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email],
+                async (error, result) => {
+                    if (error) {
+                        return reject(error);
                     }
-                    return;
-                }).catch((error) => {
-                    return reject(error)
+                    try {
+                        await this.createPatient(userId, patient);
+                    } catch (e) {
+                        return reject(e);
+                    }
+                    if (!confirmed) {
+                        return resolve();
+                    }
+                    try {
+                        await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+                        return resolve();
+                    } catch (e) {
+                        return reject(e);
+                    }
                 });
-            });
         });
     }
 
