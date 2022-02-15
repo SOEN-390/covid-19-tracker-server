@@ -106,7 +106,10 @@ export default class PatientService {
         const sql = 'SELECT * FROM User WHERE id=?';
         return new Promise(async (resolve, reject) => {
             try {
-                await db.query(sql, userId);
+                const [rows] = await db.query(sql, userId);
+                if (rows.length === 0) {
+                    return reject(new Error('User does not exist'));
+                }
                 return resolve();
             } catch (e) {
                 return reject(e);
