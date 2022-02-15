@@ -19,24 +19,15 @@ export default class PatientService {
         return new Promise(async (resolve, reject) => {
             try {
                 await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
-                try {
-                    await this.createPatient(userId, patient);
-                } catch (e) {
-                    return reject(e);
-                }
+                await this.createPatient(userId, patient);
                 if (!confirmed) {
                     return resolve();
                 }
-                try {
-                    await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
-                    return resolve();
-                } catch (e) {
-                    return reject(e);
-                }
+                await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+                return resolve();
             } catch (error) {
                 return reject(error);
             }
-
         });
     }
 
