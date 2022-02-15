@@ -42,7 +42,7 @@ describe('Patient service unit-test', () => {
         }
 
         let Mysql = jest.fn(() => ({
-            query: jest.fn(async () => { return Object})
+            query: jest.fn().mockReturnValue([])
         }));
 
         mysql = new Mysql();
@@ -58,7 +58,13 @@ describe('Patient service unit-test', () => {
 
         test('create user', async () => {
 
-            expect(await patientService.createUser(userId, testPatientData)).not.toThrowError();
+            try {
+                await patientService.createUser(userId, testPatientData);
+            }
+            catch (e) {
+                expect(e).toBeNaN();
+            }
+
         });
 
     });
