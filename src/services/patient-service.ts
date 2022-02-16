@@ -1,5 +1,5 @@
 import {Container, Service} from "typedi";
-import {IConfirmed, IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
+import {IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
 import {IUser} from "../interfaces/IUser";
 
 
@@ -14,13 +14,9 @@ export default class PatientService {
         const sql = 'INSERT INTO User VALUES (?, ?, ?, ?, ?, ?)'
         const user: IUser = this.getUserFromData(userInfo);
         const patient: IPatient = this.getPatientFromData(userInfo);
-        const confirmed = userInfo.testResult === testResult.POSITIVE;
+
         await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
         await this.createPatient(userId, patient);
-        if (!confirmed) {
-            return;
-        }
-        await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
     }
 
     async createPatient(userId: string, patient: IPatient): Promise<void> {
@@ -29,11 +25,6 @@ export default class PatientService {
         await db.query(sql, [patient.medicalId, userId, patient.testResult]);
     }
 
-    async createConfirmed(data: IConfirmed): Promise<void> {
-        const db: any = Container.get('mysql');
-        const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
-        await db.query(sql, [data.medicalId, data.flagged]);
-    }
 
     getUserFromData(userInfo: IPatientData): IUser {
         return {

@@ -19,12 +19,8 @@ export interface IPatientReturnData {
     testResult: testResult
 }
 
-export interface IConfirmed {
-    medicalId: string,
-    flagged: boolean
-}
-
 export enum testResult {
-    POSITIVE  = "positive",
-    NEGATIVE = "negative"
+    POSITIVE  = 'positive',
+    NEGATIVE = 'negative',
+    PENDING = 'pending'
 }
