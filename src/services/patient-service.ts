@@ -15,20 +15,17 @@ export default class PatientService {
         const user: IUser = this.getUserFromData(userInfo);
         const patient: IPatient = this.getPatientFromData(userInfo);
         const confirmed = userInfo.testResult === testResult.POSITIVE;
-
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
-                await this.createPatient(userId, patient);
-                if (!confirmed) {
-                    return resolve();
-                }
-                await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
-                return resolve();
-            } catch (error) {
-                return reject(error);
+        try {
+            await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
+            await this.createPatient(userId, patient);
+            if (!confirmed) {
+                return;
             }
-        });
+            await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
+        } catch (error) {
+            throw error;
+        }
+
     }
 
     async createPatient(userId: string, patient: IPatient): Promise<void> {
@@ -37,7 +34,7 @@ export default class PatientService {
         try {
             await db.query(sql, [patient.medicalId, userId, patient.testResult]);
         } catch (error) {
-            return error;
+            throw error;
         }
     }
 
@@ -47,7 +44,7 @@ export default class PatientService {
         try {
             await db.query(sql, [data.medicalId, data.flagged]);
         } catch (error) {
-            return error;
+            throw error;
         }
     }
 
@@ -79,7 +76,7 @@ export default class PatientService {
                 testResult: rows[0].testResult
             };
         } catch (error) {
-            return error;
+            throw error;
         }
 
     }
@@ -91,7 +88,7 @@ export default class PatientService {
         try {
             await db.query(sql, userId);
         } catch (error) {
-            return error;
+            throw error;
         }
 
     }
