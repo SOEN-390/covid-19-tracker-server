@@ -15,55 +15,24 @@ export default class PatientService {
         const user: IUser = this.getUserFromData(userInfo);
         const patient: IPatient = this.getPatientFromData(userInfo);
         const confirmed = userInfo.testResult === testResult.POSITIVE;
-
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
-                try {
-                    await this.createPatient(userId, patient);
-                } catch (e) {
-                    return reject(e);
-                }
-                if (!confirmed) {
-                    return resolve();
-                }
-                try {
-                    await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
-                    return resolve();
-                } catch (e) {
-                    return reject(e);
-                }
-            } catch (error) {
-                return reject(error);
-            }
-
-        });
+        await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
+        await this.createPatient(userId, patient);
+        if (!confirmed) {
+            return;
+        }
+        await this.createConfirmed({medicalId: userInfo.medicalId, flagged: false});
     }
 
     async createPatient(userId: string, patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.query(sql, [patient.medicalId, userId, patient.testResult]);
-                return resolve();
-            } catch (error) {
-                return reject(error);
-            }
-        });
+        await db.query(sql, [patient.medicalId, userId, patient.testResult]);
     }
 
     async createConfirmed(data: IConfirmed): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'INSERT INTO Confirmed VALUES (?, ?)';
-        return new Promise(async (resolve, reject) => {
-            try {
-                await db.query(sql, [data.medicalId, data.flagged]);
-                return resolve();
-            } catch (error) {
-                return reject(error);
-            }
-        });
+        await db.query(sql, [data.medicalId, data.flagged]);
     }
 
     getUserFromData(userInfo: IPatientData): IUser {
@@ -80,38 +49,24 @@ export default class PatientService {
 
     async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
         const db: any = Container.get('mysql');
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.verifyUser(userId);
-                const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
-                    'WHERE User.id = Patient.userId AND medicalId=?';
-                const [rows] = await db.query(sql, medicalId);
-                if (rows.length === 0) {
-                    return reject(new Error('User does not exist'));
-                }
-                return resolve({
-                    firstName: rows[0].firstName,
-                    lastName: rows[0].lastName,
-                    testResult: rows[0].testResult
-                });
-            } catch (error) {
-                return reject(error);
-            }
-        });
+        await this.verifyUser(userId);
+        const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
+            'WHERE User.id = Patient.userId AND medicalId=?';
+        const [rows] = await db.query(sql, medicalId);
+        if (rows.length === 0) {
+            throw new Error('User does not exist');
+        }
+        return {
+            firstName: rows[0].firstName,
+            lastName: rows[0].lastName,
+            testResult: rows[0].testResult
+        };
     }
 
     // To be used for almost all functions to verify the requester user exists in our db
     async verifyUser(userId: string): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
-        try {
-            const [rows] = await db.query(sql, userId);
-            if (rows.length === 0) {
-                throw new Error('User does not exist');
-            }
-        } catch (error) {
-            throw error;
-        }
-
+        await db.query(sql, userId);
     }
 }
