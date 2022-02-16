@@ -67,6 +67,9 @@ export default class PatientService {
     async verifyUser(userId: string): Promise<void> {
         const db: any = Container.get('mysql');
         const sql = 'SELECT * FROM User WHERE id=?';
-        await db.query(sql, userId);
+        const [rows] = await db.query(sql, userId);
+        if (rows.length === 0) {
+            throw new Error('User does not exist');
+        }
     }
 }
