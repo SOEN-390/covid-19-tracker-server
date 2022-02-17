@@ -99,7 +99,7 @@ export default class PatientService {
         const db: any = Container.get('mysql');
         return new Promise(( resolve, reject) => {
             this.verifyUser(userId).then(() => {
-                const sql = 'SELECT firstName, lastName, testResult, LastUpdate, DoctorName, DaysQuarantined FROM User, Patient '+
+                const sql = 'SELECT firstName, lastName, testResult FROM User, Patient '+
                 ' WHERE User.id = Patient.userId';
                 db.query(sql, (error, result) => 
                 {
