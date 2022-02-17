@@ -58,22 +58,17 @@ export default class PatientService {
     public async getPatients(userId: string): Promise<IPatientReturnData[]> {
         const patientsArray:IPatientReturnData[] = [];
         const db: any = Container.get('mysql');
-        return new Promise(( resolve, reject) => {
-            this.verifyUser(userId).then(() => {
-                const sql = 'SELECT firstName, lastName, testResult FROM User, Patient '+
+        await this.verifyUser(userId)
+        const sql = 'SELECT firstName, lastName, testResult FROM User, Patient '+
                 ' WHERE User.id = Patient.userId';
-                db.query(sql, (error, result) =>
-                {
-                    result.forEach(patient => {
-                        patientsArray.push(patient)
-                    });
-                    return resolve (patientsArray);
-
-                });
-            }).catch((error) => {
-                return reject(error);
-            })
+        const results =await db.query(sql);
+        if (results.length === 0) {
+                throw new Error('Zero Patients exist');
+            }
+        results[0].forEach(patient => {
+            patientsArray.push(patient)
         });
+        return (patientsArray);
     }
 
 
