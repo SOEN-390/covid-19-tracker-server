@@ -37,16 +37,17 @@ export default (app: Router) => {
         });
     });
 
-    route.get('/all', middleware.authenticateJWT, async (req, res, next) => {
-        console.debug("Calling get all..");
-        const userId = getUserAuth(req.headers).user_id;
-        const patientServiceInstance = Container.get(PatientService);
-        patientServiceInstance.getPatients(userId).then((patient) => {
-            return res.json(patient);
-        }).catch((error) => {
-            return next(error);
-        })
-    });
+    route.get('/all', middleware.authenticateJWT,
+        async (req, res, next) => {
+            console.debug("Calling get all..");
+            const userId = getUserAuth(req.headers).user_id;
+            const patientServiceInstance = Container.get(PatientService);
+            patientServiceInstance.getAllPatients(userId).then((patient) => {
+                return res.json(patient);
+            }).catch((error) => {
+                return next(error);
+            })
+        });
 
 
     route.get('/:medicalId', middleware.authenticateJWT, celebrate({
@@ -65,7 +66,6 @@ export default (app: Router) => {
     });
 
 
-    
 }
 
 

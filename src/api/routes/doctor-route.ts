@@ -26,7 +26,7 @@ export default (app: Router) => {
         console.debug("Calling get all..");
         const userId = getUserAuth(req.headers).user_id;
         const doctorServiceInstance = Container.get(DoctorService);
-        doctorServiceInstance.getDoctors(userId).then((doctor) => {
+        doctorServiceInstance.getAllDoctors(userId).then((doctor) => {
             return res.json(doctor);
         }).catch((error) => {
             return next(error);

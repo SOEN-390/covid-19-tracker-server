@@ -1,6 +1,5 @@
 import {Container, Service} from "typedi";
-import {IDoctor, IDoctorData, IDoctorReturnData} from "../interfaces/IDoctor";
-import {IUser} from "../interfaces/IUser";
+import {IDoctorReturnData} from "../interfaces/IDoctor";
 
 
 @Service()
@@ -9,23 +8,20 @@ export default class DoctorService {
     constructor() {
     }
 
-    public async getDoctors(userId: string): Promise<IDoctorReturnData[]> {
-        const doctorssArray:IDoctorReturnData[] = [];
+    public async getAllDoctors(userId: string): Promise<IDoctorReturnData[]> {
+        const doctorsArray: IDoctorReturnData[] = [];
         const db: any = Container.get('mysql');
 
         await this.verifyUser(userId)
         const sql = 'SELECT firstName, lastName, licenseId, phoneNumber, address, email FROM User, Doctor WHERE User.id = Doctor.id';
-        const results =await db.query(sql);
+        const results = await db.query(sql);
         if (results.length === 0) {
-                throw new Error('Zero Doctors exist');
-            }
+            throw new Error('Zero Doctors exist');
+        }
         results[0].forEach(doctor => {
-            doctorssArray.push(doctor)
+            doctorsArray.push(doctor)
         });
-        return (doctorssArray);
-
-
-
+        return doctorsArray;
     }
 
 

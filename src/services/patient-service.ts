@@ -55,10 +55,10 @@ export default class PatientService {
     }
 
 
-    public async getPatients(userId: string): Promise<IPatientReturnData[]> {
+    public async getAllPatients(userId: string): Promise<IPatientReturnData[]> {
         const patientsArray:IPatientReturnData[] = [];
         const db: any = Container.get('mysql');
-        await this.verifyUser(userId)
+        await this.verifyUser(userId);
         const sql = 'SELECT firstName, lastName, testResult FROM User, Patient '+
                 ' WHERE User.id = Patient.userId';
         const results =await db.query(sql);
@@ -68,7 +68,7 @@ export default class PatientService {
         results[0].forEach(patient => {
             patientsArray.push(patient)
         });
-        return (patientsArray);
+        return patientsArray;
     }
 
 
