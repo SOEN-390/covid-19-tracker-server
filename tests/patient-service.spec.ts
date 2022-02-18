@@ -6,9 +6,6 @@ describe('Patient service unit-test', () => {
 
     let userId;
     let testPatientData;
-    let testPatient;
-    let testConfirmed;
-    let testUser;
 
     let patientService: PatientService;
     let mysql;
@@ -29,22 +26,11 @@ describe('Patient service unit-test', () => {
             testResult: testResult.POSITIVE
         }
 
-        testUser = [testPatientData.id, testPatientData.firstName,
-            testPatientData.lastName, testPatientData.phoneNumber,
-            testPatientData.address, testPatientData.email];
 
-        testPatient = {
-            medicalId: testPatientData.medicalId,
-            testResult: testPatientData.testResult
-        }
-
-        testConfirmed = {
-            medicalId: testPatientData.medicalId,
-            flagged: false
-        }
-
-        rows = [{firstName: 'demo',
-            lastName: 'user', testResult: testResult.POSITIVE}];
+        rows = [{
+            firstName: 'demo',
+            lastName: 'user', testResult: testResult.POSITIVE
+        }];
 
         let Mysql = jest.fn(() => ({
             query: jest.fn().mockReturnValue([rows])
@@ -65,8 +51,7 @@ describe('Patient service unit-test', () => {
 
             try {
                 await patientService.createUser(userId, testPatientData);
-            }
-            catch (e) {
+            } catch (e) {
                 expect(e).toBeNaN();
             }
 
@@ -79,11 +64,27 @@ describe('Patient service unit-test', () => {
 
         test('get patient with id', async () => {
             let profile = await patientService.getPatientWithId(userId, testPatientData.medicalId);
-            expect(profile).toEqual({firstName: 'demo',
-                lastName: 'user', testResult: testResult.POSITIVE});
+            expect(profile).toEqual({
+                firstName: 'demo',
+                lastName: 'user', testResult: testResult.POSITIVE
+            });
 
         });
 
+
+    });
+
+    describe("Get All Patient", () => {
+
+
+        test('get all patients', async () => {
+            let patients = await patientService.getAllPatients(userId);
+            expect(patients).toEqual([{
+                firstName: 'demo',
+                lastName: 'user', testResult: testResult.POSITIVE
+            }]);
+
+        });
 
 
     });
