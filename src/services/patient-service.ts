@@ -54,6 +54,24 @@ export default class PatientService {
         };
     }
 
+
+    public async getAllPatients(userId: string): Promise<IPatientReturnData[]> {
+        const patientsArray:IPatientReturnData[] = [];
+        const db: any = Container.get('mysql');
+        await this.verifyUser(userId);
+        const sql = 'SELECT firstName, lastName, testResult FROM User, Patient '+
+                ' WHERE User.id = Patient.userId';
+        const results =await db.query(sql);
+        if (results.length === 0) {
+                throw new Error('Zero Patients exist');
+            }
+        results[0].forEach(patient => {
+            patientsArray.push(patient)
+        });
+        return patientsArray;
+    }
+
+
     // To be used for almost all functions to verify the requester user exists in our db
     async verifyUser(userId: string): Promise<void> {
         const db: any = Container.get('mysql');
