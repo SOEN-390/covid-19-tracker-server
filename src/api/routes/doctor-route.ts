@@ -33,9 +33,23 @@ export default (app: Router) => {
         })
     });
 
+    route.get('/:licenseId/patients/assigned', middleware.authenticateJWT, celebrate({
+            params: Joi.object({
+                licenseId: Joi.string().required()
+            })
+        }),
+        async (req, res, next) => {
+            console.debug("Calling get assigned patients for doctor..");
+            const userId = getUserAuth(req.headers).user_id;
+            const doctorServiceInstance = Container.get(DoctorService);
+            doctorServiceInstance.getAssignedPatients(userId, req.params.licenseId).then((patients) => {
+                return res.json(patients);
+            }).catch((error) => {
+                return next(error);
+            })
+        });
 
-   
-    
+
 }
 
 

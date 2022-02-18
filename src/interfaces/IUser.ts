@@ -11,6 +11,7 @@ export interface IUser {
 
 
 export interface IUserReturnData {
+    id?: string,
     firstName: string,
     lastName: string,
     address: string,
