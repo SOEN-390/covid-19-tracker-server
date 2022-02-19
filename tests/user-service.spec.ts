@@ -66,7 +66,7 @@ describe('User service unit-test', () => {
     describe('Get Patient', () => {
 
         beforeEach(() => {
-            let rows = [{testResult: testResult.POSITIVE}]
+            let rows = [{medicalId: '1', testResult: testResult.POSITIVE}]
             let Mysql = jest.fn(() => ({
                 query: jest.fn().mockReturnValue([rows])
             }));
@@ -78,7 +78,7 @@ describe('User service unit-test', () => {
 
         test('get patient',  async () => {
             let testResult = await userService.getPatient(userId);
-            expect(testResult).toBe('positive');
+            expect(testResult).toEqual({'medicalId': '1', 'testResult': 'positive' });
 
         });
     });
