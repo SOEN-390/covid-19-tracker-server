@@ -1,6 +1,6 @@
 import {Container, Service} from "typedi";
 import {IUserReturnData} from "../interfaces/IUser";
-import {testResult} from "../interfaces/IPatient";
+import {IPatient} from "../interfaces/IPatient";
 
 
 @Service()
@@ -29,13 +29,15 @@ export default class UserService {
             console.log("Not an Authority");
         }
         try {
-            await this.getDoctor(userId);
+            user.id = await this.getDoctor(userId);
             user.role = 'doctor';
             return user;
         } catch (e) {
             console.log("Not a Doctor");
         }
-        user.testResult = await this.getPatient(userId);
+        const patient: IPatient = await this.getPatient(userId);
+        user.id = patient.medicalId;
+        user.testResult = patient.testResult;
         user.role = 'patient';
         return user;
     }
@@ -50,22 +52,23 @@ export default class UserService {
         return rows[0].privilege;
     }
 
-    async getPatient(userId: string): Promise<testResult> {
+    async getPatient(userId: string): Promise<IPatient> {
         const db: any = Container.get('mysql');
-        const sql = 'SELECT testResult FROM Patient WHERE userId = ?';
+        const sql = 'SELECT medicalId, testResult FROM Patient WHERE userId = ?';
         const [rows] = await db.query(sql, userId);
         if (rows.length === 0) {
             throw new Error('User not found');
         }
-        return rows[0].testResult;
+        return {medicalId: rows[0].medicalId, testResult: rows[0].testResult};
     }
 
-    async getDoctor(userId: string): Promise<void> {
+    async getDoctor(userId: string): Promise<string> {
         const db: any = Container.get('mysql');
-        const sql = 'SELECT * FROM Doctor WHERE id = ?';
+        const sql = 'SELECT licenseId FROM Doctor WHERE id = ?';
         const [rows] = await db.query(sql, userId);
         if (rows.length === 0) {
             throw new Error('User not found');
         }
+        return rows[0].licenseId;
     }
 }

@@ -1,5 +1,5 @@
 import {Container, Service} from "typedi";
-import {IPatient, IPatientData, IPatientReturnData, testResult} from "../interfaces/IPatient";
+import {IPatient, IPatientData, IPatientReturnData} from "../interfaces/IPatient";
 import {IUser} from "../interfaces/IUser";
 
 
