@@ -16,7 +16,9 @@ const PATIENT_SCHEMA_MAP = {
     testResult: Joi.string().required(),
     address: Joi.string().required(),
     email: Joi.string().required(),
-    phoneNumber: Joi.string().required()
+    phoneNumber: Joi.string().required(),
+    gender: Joi.string().required(),
+    dob: Joi.string().required()
 }
 
 

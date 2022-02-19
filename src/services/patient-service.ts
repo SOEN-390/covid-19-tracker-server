@@ -21,8 +21,8 @@ export default class PatientService {
 
     async createPatient(userId: string, patient: IPatient): Promise<void> {
         const db: any = Container.get('mysql');
-        const sql = 'INSERT INTO Patient VALUES (?, ?, ?)'
-        await db.query(sql, [patient.medicalId, userId, patient.testResult]);
+        const sql = 'INSERT INTO Patient VALUES (?, ?, ?, ?, ?, ?)'
+        await db.query(sql, [patient.medicalId, userId, patient.testResult, null, patient.dob, patient.gender]);
     }
 
 
@@ -35,7 +35,7 @@ export default class PatientService {
     }
 
     getPatientFromData(userInfo: IPatientData): IPatient {
-        return {medicalId: userInfo.medicalId, testResult: userInfo.testResult};
+        return {medicalId: userInfo.medicalId, testResult: userInfo.testResult, dob: userInfo.dob, gender: userInfo.gender};
     }
 
     async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
