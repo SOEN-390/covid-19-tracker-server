@@ -18,7 +18,9 @@ export interface IUserReturnData {
     email: string,
     phoneNumber: string,
     testResult?: testResult,
-    role: string
+    role: string,
+    dob?: string,
+    gender?: string
 }
 
 
