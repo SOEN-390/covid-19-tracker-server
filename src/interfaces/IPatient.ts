@@ -38,5 +38,5 @@ export enum testResult {
 export enum gender {
     MALE = 'male',
     FEMALE = 'female',
-    NONE = 'none'
+    NONE = 'Prefer not to say'
 }
