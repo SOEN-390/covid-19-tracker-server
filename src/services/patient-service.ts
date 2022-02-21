@@ -41,16 +41,23 @@ export default class PatientService {
     async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
         const db: any = Container.get('mysql');
         await this.verifyUser(userId);
-        const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
+        const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email,' +
+            ' dob, gender FROM User, Patient ' +
             'WHERE User.id = Patient.userId AND medicalId=?';
         const [rows] = await db.query(sql, medicalId);
         if (rows.length === 0) {
             throw new Error('User does not exist');
         }
         return {
+            medicalId: rows[0].medicalId,
             firstName: rows[0].firstName,
             lastName: rows[0].lastName,
-            testResult: rows[0].testResult
+            testResult: rows[0].testResult,
+            phoneNumber: rows[0].phoneNumber,
+            address: rows[0].address,
+            email: rows[0].email,
+            dob: rows[0].dob,
+            gender: rows[0].gender
         };
     }
 

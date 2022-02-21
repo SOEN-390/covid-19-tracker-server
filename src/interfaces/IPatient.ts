@@ -18,9 +18,15 @@ export interface IPatient {
 }
 
 export interface IPatientReturnData {
+    medicalId: string,
     firstName: string,
     lastName: string,
-    testResult: testResult
+    testResult: testResult,
+    phoneNumber: string,
+    address: string,
+    email: string,
+    dob: string,
+    gender: gender
 }
 
 export enum testResult {
