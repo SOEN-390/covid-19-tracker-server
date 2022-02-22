@@ -67,6 +67,24 @@ export default (app: Router) => {
         })
     });
 
+    route.patch('/:medicalId/status', middleware.authenticateJWT, celebrate({
+        params: Joi.object({
+            medicalId: Joi.string().required()
+        }),
+        body: Joi.object({
+            status: Joi.string().required()
+        })
+    }), async (req, res, next) => {
+        console.debug("Calling update status..");
+        const userId = getUserAuth(req.headers).user_id;
+        const patientServiceInstance = Container.get(PatientService);
+        patientServiceInstance.updateTestResult(userId, req.params.medicalId, req.body.status).then(() => {
+            return res.status(200).end();
+        }).catch((error) => {
+            return next(error);
+        });
+    });
+
 
 }
 

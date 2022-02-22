@@ -78,6 +78,12 @@ export default class PatientService {
         return patientsArray;
     }
 
+    async updateTestResult(userId: any, medicalId: string, testResult: string) {
+        const db: any = Container.get('mysql');
+        await this.verifyUser(userId);
+        const sql = 'UPDATE Patient SET testResult = ? WHERE medicalId = ?';
+        await db.query(sql, [testResult, medicalId]);
+    }
 
     // To be used for almost all functions to verify the requester user exists in our db
     async verifyUser(userId: string): Promise<void> {
@@ -88,4 +94,6 @@ export default class PatientService {
             throw new Error('User does not exist');
         }
     }
+
+
 }
