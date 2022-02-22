@@ -30,7 +30,7 @@ jobs:
       run: docker-compose up --build -d
 
     - name: Run ESLint
-      run: docker exec -e covid-19-tracker-server npm run style:eslint
+      run: docker exec covid-19-tracker-server npm run style:eslint
 
     - name: Run tests
       run: docker exec covid-19-tracker-server npm run test --verbose
