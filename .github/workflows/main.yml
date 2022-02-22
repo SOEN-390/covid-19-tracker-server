@@ -26,14 +26,11 @@ jobs:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: echo $DEV_ENV | base64 --decode > .env
 
-    - name: Build docker image
-      run: docker-compose build
-
-    - name: Run docker container
-      run: docker-compose up -d
+    - name: Build and Run the Docker Containers
+      run: docker-compose up --build -d
 
     - name: Run ESLint
-      run: docker exec -e CI=true covid-19-tracker-server npm run style:eslint
+      run: docker exec -e covid-19-tracker-server npm run style:eslint
 
     - name: Run tests
       run: docker exec covid-19-tracker-server npm run test --verbose
