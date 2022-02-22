@@ -4,6 +4,7 @@ ARG PORT
 
 # TypeScript
 RUN npm install -g typescript@latest
+RUN npm -g i eslint-cli
 
 RUN mkdir /code
 WORKDIR /code
