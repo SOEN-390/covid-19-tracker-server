@@ -6,8 +6,8 @@ ARG PORT
 RUN npm install -g typescript@latest
 RUN npm -g i eslint-cli
 
-RUN mkdir -p /var/code/
-WORKDIR /var/code/
+RUN mkdir /code
+WORKDIR /code
 
 COPY package.json .
 
