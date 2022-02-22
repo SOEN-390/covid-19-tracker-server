@@ -1,112 +1,106 @@
-import {testResult} from "../src/interfaces/IPatient";
-import UserService from "../src/services/user-service";
-import {Container} from "typedi";
-
+import { testResult } from '../src/interfaces/IPatient';
+import UserService from '../src/services/user-service';
+import { Container } from 'typedi';
 
 describe('User service unit-test', () => {
 
-    let userId;
+	let userId;
 
-    let userService: UserService;
-    let mysql;
+	let userService: UserService;
+	let mysql;
 
-    beforeAll(() => {
+	beforeAll(() => {
 
-        userId = '1234';
+		userId = '1234';
 
-        userService = new UserService();
-        Container.set(UserService, userService);
+		userService = new UserService();
+		Container.set(UserService, userService);
 
-    });
+	});
 
-    describe('User Not found', () => {
+	describe('User Not found', () => {
 
-        beforeEach(() => {
+		beforeEach(() => {
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([[]])
+			}));
 
-            let Mysql = jest.fn(() => ({
-                query: jest.fn().mockReturnValue([[]])
-            }));
+			mysql = new Mysql();
+			Container.set('mysql', mysql);
+		});
 
-            mysql = new Mysql();
-            Container.set('mysql', mysql);
-        });
+		test('User does not exist error', async () => {
+			try {
+				await userService.getUser(userId);
+			} catch (error) {
+				expect(error).toEqual(new Error('User does not exist'));
+			}
+		});
 
-        test('User does not exist error', async () => {
-            try {
-                await userService.getUser(userId)
-            }
-            catch (error) {
-                expect(error).toEqual(new Error('User does not exist'));
-            }
-
-        });
-    });
+	});
 
 
-    describe('Get Authority', () => {
+	describe('Get Authority', () => {
 
-        beforeEach(() => {
-            let rows = [{privilege: 'admin'}];
-            let Mysql = jest.fn(() => ({
-                query: jest.fn().mockReturnValue([rows])
-            }));
+		beforeEach(() => {
+			const rows = [{privilege: 'admin'}];
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
 
-            mysql = new Mysql();
-            Container.set('mysql', mysql);
-        });
+			mysql = new Mysql();
+			Container.set('mysql', mysql);
+		});
 
+		test('get admin', async () => {
+			const privilege = await userService.getAuthority(userId);
+			expect(privilege).toBe('admin');
 
-        test('get admin',  async () => {
-            let privilege = await userService.getAuthority(userId);
-            expect(privilege).toBe('admin');
+		});
 
-        });
-    });
+	});
 
-    describe('Get Patient', () => {
+	describe('Get Patient', () => {
 
-        beforeEach(() => {
-            let rows = [{medicalId: '1', testResult: testResult.POSITIVE}]
-            let Mysql = jest.fn(() => ({
-                query: jest.fn().mockReturnValue([rows])
-            }));
+		beforeEach(() => {
+			const rows = [{medicalId: '1', testResult: testResult.POSITIVE}];
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
 
-            mysql = new Mysql();
-            Container.set('mysql', mysql);
-        });
+			mysql = new Mysql();
+			Container.set('mysql', mysql);
+		});
 
+		test('get patient', async () => {
+			const testResult = await userService.getPatient(userId);
+			expect(testResult).toEqual({'medicalId': '1', 'testResult': 'positive'});
 
-        test('get patient',  async () => {
-            let testResult = await userService.getPatient(userId);
-            expect(testResult).toEqual({'medicalId': '1', 'testResult': 'positive' });
+		});
 
-        });
-    });
+	});
 
-    describe('Get Doctor', () => {
+	describe('Get Doctor', () => {
 
-        beforeEach(() => {
-            let rows = [{firstName: 'doctor'}];
-            let Mysql = jest.fn(() => ({
-                query: jest.fn().mockReturnValue([rows])
-            }));
+		beforeEach(() => {
+			const rows = [{firstName: 'doctor'}];
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
 
-            mysql = new Mysql();
-            Container.set('mysql', mysql);
-        });
+			mysql = new Mysql();
+			Container.set('mysql', mysql);
+		});
 
+		test('get doctor', async () => {
+			try {
+				await userService.getDoctor(userId);
+			} catch (e) {
+				expect(e).toBeNaN();
+			}
 
-        test('get doctor',  async () => {
-            try {
-                await userService.getDoctor(userId)
-            } catch (e) {
-                expect(e).toBeNaN();
-            }
+		});
 
-        });
-
-
-    });
-
+	});
 
 });

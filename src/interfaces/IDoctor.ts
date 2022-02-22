@@ -1,19 +1,19 @@
 export interface IDoctorData {
-    licenseId: string,
-    firstName: string,
-    lastName: string,
-    address: string,
-    email: string,
-    phoneNumber: string
+	licenseId: string,
+	firstName: string,
+	lastName: string,
+	address: string,
+	email: string,
+	phoneNumber: string
 }
 
 export interface IDoctor {
-    licenseId: string,
+	licenseId: string,
 }
 
 export interface IDoctorReturnData {
-    firstName: string,
-    lastName: string,
-    licenseId: string,
+	firstName: string,
+	lastName: string,
+	licenseId: string,
 }
 
