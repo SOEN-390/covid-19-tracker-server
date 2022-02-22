@@ -2,12 +2,12 @@ name:  CI - PR/Merge to Master
 
 on:
   push:
-    branches: 
+    branches:
     - master
   pull_request:
-    branches: 
+    branches:
     - master
-    
+
 # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -19,18 +19,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     # Create .env file
     - name: Create .env file
       env:
         DEV_ENV: ${{ secrets.DEV_ENV }}
       run: echo $DEV_ENV | base64 --decode > .env
-        
-    - name: Build docker image
-      run: docker-compose build
 
-    - name: Run docker container
-      run: docker-compose up -d
-      
-    - name: Run tests
+    - name: Build and Run the Docker Containers
+      run: docker-compose up --build -d
+
+    - name: Run ESLint
+      run: docker exec -e CI=true covid-19-tracker-server npm run style:eslint
+
+    - name: Run Tests
       run: docker exec covid-19-tracker-server npm run test --verbose

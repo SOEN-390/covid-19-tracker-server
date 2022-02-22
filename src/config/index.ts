@@ -1,8 +1,6 @@
-
-export default  {
-    api: {
-        prefix: '/api/',
-        version: 'v1'
-    }
-}
-
+export default {
+	api: {
+		prefix: '/api/',
+		version: 'v1'
+	}
+};

@@ -1,55 +1,51 @@
-import PatientService from "../src/services/patient-service";
-import DoctorService from "../src/services/doctor-service";
-import {Container} from "typedi";
-
+import PatientService from '../src/services/patient-service';
+import DoctorService from '../src/services/doctor-service';
+import { Container } from 'typedi';
 
 describe('Doctor service unit-test', () => {
 
-    let userId;
-    let testDoctorData
-    let doctorService: DoctorService;
-    let mysql;
+	let userId;
+	let testDoctorData;
+	let doctorService: DoctorService;
+	let mysql;
 
-    let rows;
+	let rows;
 
-    beforeEach(() => {
+	beforeEach(() => {
 
-        userId = '1234';
+		userId = '1234';
 
-        testDoctorData = {
-            licenseId: '12',
-            firstName: 'demo',
-            lastName: 'doctor',
-            address: 'st-laurent',
-            email: 'test@gmail.com',
-            phoneNumber: '514-555-5555',
-        }
+		testDoctorData = {
+			licenseId: '12',
+			firstName: 'demo',
+			lastName: 'doctor',
+			address: 'st-laurent',
+			email: 'test@gmail.com',
+			phoneNumber: '514-555-5555',
+		};
 
-        rows = [testDoctorData, testDoctorData];
+		rows = [testDoctorData, testDoctorData];
 
-        let Mysql = jest.fn(() => ({
-            query: jest.fn().mockReturnValue([rows])
-        }));
+		const Mysql = jest.fn(() => ({
+			query: jest.fn().mockReturnValue([rows])
+		}));
 
-        mysql = new Mysql();
+		mysql = new Mysql();
 
-        Container.set('mysql', mysql);
+		Container.set('mysql', mysql);
 
-        doctorService = new DoctorService();
-        Container.set(PatientService, doctorService);
+		doctorService = new DoctorService();
+		Container.set(PatientService, doctorService);
 
-    });
+	});
 
-    describe("Get All Doctors", () => {
+	describe('Get All Doctors', () => {
 
-        test('get all doctors', async () => {
-            let doctors = await doctorService.getAllDoctors(userId);
-            expect(doctors).toEqual([testDoctorData, testDoctorData]);
+		test('get all doctors', async () => {
+			const doctors = await doctorService.getAllDoctors(userId);
+			expect(doctors).toEqual([testDoctorData, testDoctorData]);
+		});
 
-        });
-
-
-    });
-
+	});
 
 });

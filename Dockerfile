@@ -4,6 +4,7 @@ ARG PORT
 
 # TypeScript
 RUN npm install -g typescript@latest
+RUN npm -g i eslint-cli
 
 RUN mkdir /code
 WORKDIR /code
@@ -18,6 +19,7 @@ COPY src src
 COPY tests tests
 COPY tsconfig.json ./
 COPY jest.unit.json ./
+COPY .eslintrc.json ./
 
 # compile ts to js
 RUN tsc --skipLibCheck

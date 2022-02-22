@@ -1,6 +1,5 @@
-
-import authenticateJWT from "./authenticateJWT";
+import authenticateJWT from './authenticateJWT';
 
 export default {
-    authenticateJWT: authenticateJWT
+	authenticateJWT: authenticateJWT
 };
