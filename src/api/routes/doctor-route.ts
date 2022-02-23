@@ -5,6 +5,7 @@ import { Container } from 'typedi';
 import middleware from '../middleware';
 import { IDoctorData } from '../../interfaces/IDoctor';
 import { getUserAuth } from '../middleware/userAuthData';
+import PatientService from '../../services/patient-service';
 
 const route = Router();
 
@@ -44,6 +45,23 @@ export default (app: Router) => {
 			const doctorServiceInstance = Container.get(DoctorService);
 			doctorServiceInstance.getAssignedPatients(userId, req.params.licenseId).then((patients) => {
 				return res.json(patients);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.get('/patient/:medicalId', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get patient as Doctor..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getPatientWithId(userId, req.params.medicalId).then((patient) => {
+				return res.json(patient);
 			}).catch((error) => {
 				return next(error);
 			});
