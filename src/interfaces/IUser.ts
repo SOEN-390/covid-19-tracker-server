@@ -19,7 +19,8 @@ export interface IUserReturnData {
 	testResult?: testResult,
 	role: string,
 	dob?: string,
-	gender?: string
+	gender?: string,
+	flagged?: boolean
 }
 
 

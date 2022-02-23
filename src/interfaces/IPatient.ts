@@ -14,7 +14,8 @@ export interface IPatient {
 	medicalId: string,
 	testResult: testResult,
 	dob: string,
-	gender: gender
+	gender: gender,
+	flagged: boolean
 }
 
 export interface IPatientReturnData {
@@ -26,7 +27,8 @@ export interface IPatientReturnData {
 	address: string,
 	email: string,
 	dob: string,
-	gender: gender
+	gender: gender,
+	flagged: boolean
 }
 
 export enum testResult {
@@ -39,4 +41,12 @@ export enum gender {
 	MALE = 'male',
 	FEMALE = 'female',
 	NONE = 'Prefer not to say'
+}
+
+export enum UserType {
+	PATIENT = 'patient',
+	DOCTOR = 'doctor',
+	IMMIGRATION_OFFICER = 'immigration_officer',
+	HEALTH_OFFICIAL = 'health_official',
+	ADMIN = 'admin'
 }

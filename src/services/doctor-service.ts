@@ -31,7 +31,7 @@ export default class DoctorService {
 
 		await this.verifyUser(userId);
 		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email,' +
-			' dob, gender FROM User, Patient WHERE Patient.doctorId=? AND User.id = Patient.userId';
+			' dob, gender, flagged FROM User, Patient WHERE Patient.doctorId=? AND User.id = Patient.userId';
 		const [rows] = await db.query(sql, licenseId);
 		if (rows.length === 0) {
 			throw new Error('No patients assigned');
@@ -40,6 +40,30 @@ export default class DoctorService {
 			patients.push(patient);
 		});
 		return patients;
+	}
+
+	async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email,' +
+			' dob, gender, flagged FROM User, Patient ' +
+			'WHERE User.id = Patient.userId AND medicalId=?';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length === 0) {
+			throw new Error('User does not exist');
+		}
+		return {
+			medicalId: rows[0].medicalId,
+			firstName: rows[0].firstName,
+			lastName: rows[0].lastName,
+			testResult: rows[0].testResult,
+			phoneNumber: rows[0].phoneNumber,
+			address: rows[0].address,
+			email: rows[0].email,
+			dob: rows[0].dob,
+			gender: rows[0].gender,
+			flagged: rows[0].flagged
+		};
 	}
 
 	// To be used for almost all functions to verify the requester user exists in our db
