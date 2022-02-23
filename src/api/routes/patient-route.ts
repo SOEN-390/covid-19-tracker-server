@@ -3,7 +3,7 @@ import { celebrate, Joi } from 'celebrate';
 import PatientService from '../../services/patient-service';
 import { Container } from 'typedi';
 import middleware from '../middleware';
-import { IPatientData } from '../../interfaces/IPatient';
+import { IPatientData, IReportPatient } from '../../interfaces/IPatient';
 import { getUserAuth } from '../middleware/userAuthData';
 
 const route = Router();
@@ -58,7 +58,7 @@ export default (app: Router) => {
 				medicalId: Joi.string().required()
 			})
 		}), async (req, res, next) => {
-			console.debug('Calling get patient as Authority..');
+			console.debug('Calling get patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
 			patientServiceInstance.getPatientWithId(userId, req.params.medicalId).then((patient) => {
@@ -122,6 +122,26 @@ export default (app: Router) => {
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
 			patientServiceInstance.unFlagPatient(userId, req.params.medicalId, req.body.role).then(() => {
+				return res.status(200).end();
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.post('/:medicalId/report', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			}),
+			body: Joi.object({
+				people: Joi.array()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling report in contact with..');
+			const userId = getUserAuth(req.headers).user_id;
+			const patientServiceInstance = Container.get(PatientService);
+			patientServiceInstance.reportInContactWith(userId, req.params.medicalId, req.body.people as IReportPatient[]).then(() => {
 				return res.status(200).end();
 			}).catch((error) => {
 				return next(error);

@@ -15,7 +15,7 @@ export interface IPatient {
 	testResult: testResult,
 	dob: string,
 	gender: gender,
-	flagged: boolean
+	flagged?: boolean
 }
 
 export interface IPatientReturnData {
@@ -29,6 +29,13 @@ export interface IPatientReturnData {
 	dob: string,
 	gender: gender,
 	flagged: boolean
+}
+
+export interface IReportPatient {
+	fistName: string,
+	lastName: string,
+	email: string,
+	phoneNumber: string
 }
 
 export enum testResult {
