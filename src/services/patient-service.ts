@@ -92,11 +92,11 @@ export default class PatientService {
 		await db.query(sql, [testResult, medicalId]);
 	}
 
-	async flagPatient(userId: string, medicalId: string, role: UserType): Promise<void>  {
+	async flagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
-		let sql='';
+		let sql = '';
 		switch (role) {
 			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL:
 				sql = 'INSERT INTO Flagged_Auth VALUES (?,?)';
@@ -110,11 +110,11 @@ export default class PatientService {
 		}
 	}
 
-	async unFlagPatient(userId: string, medicalId: string, role: UserType): Promise<void>  {
+	async unFlagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
-		let sql='';
+		let sql = '';
 		switch (role) {
 			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL:
 				sql = 'DELETE FROM Flagged_Auth WHERE medicalId =? AND authId =?';
@@ -140,22 +140,24 @@ export default class PatientService {
 
 	async verifyRole(userId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
-		let sql='';
+		let sql = '';
 		switch (role) {
-			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL:
+			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL: {
 				sql = 'SELECT * FROM Authority WHERE id=?';
-				let [rows1] = await db.query(sql, userId);
+				const [rows1] = await db.query(sql, userId);
 				if (rows1.length === 0) {
 					throw new Error('Role does not match');
 				}
 				return;
-			case UserType.DOCTOR:
+			}
+			case UserType.DOCTOR: {
 				sql = 'SELECT * FROM Doctor WHERE id=?';
-				let [rows2] = await db.query(sql, userId);
+				const [rows2] = await db.query(sql, userId);
 				if (rows2.length === 0) {
 					throw new Error('Role does not match');
 				}
 				return;
+			}
 		}
 	}
 
