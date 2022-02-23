@@ -41,7 +41,7 @@ export default class UserService {
 		user.dob = patient.dob;
 		user.gender = patient.gender;
 		user.role = 'patient';
-		user.flagged = patient.flagged
+		user.flagged = patient.flagged;
 		return user;
 	}
 
