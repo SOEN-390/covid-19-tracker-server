@@ -135,12 +135,12 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const person of people) {
-			let sql = 'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?'
+			let sql = 'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?';
 			const [rows] = await db.query(sql, [person.phoneNumber, person.email]);
 			if (rows.length ==0) {
 				throw new Error('Reportee is not a user');
 			}
-			sql = 'INSERT INTO InContact VALUES (?,?, NOW())'
+			sql = 'INSERT INTO InContact VALUES (?,?, NOW())';
 			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
 		}
 	}
