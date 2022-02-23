@@ -1,5 +1,5 @@
 import { Container, Service } from 'typedi';
-import { IPatient, IPatientData, IPatientReturnData, UserType } from '../interfaces/IPatient';
+import { IPatient, IPatientData, IPatientReturnData, IReportPatient, UserType } from '../interfaces/IPatient';
 import { IUser } from '../interfaces/IUser';
 
 @Service()
@@ -73,9 +73,12 @@ export default class PatientService {
 		const patientsArray: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT firstName, lastName, testResult FROM User, Patient ' +
+		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email, ' +
+			'dob, gender, CASE WHEN medicalId IN ' +
+			'(SELECT medicalId From Flagged_Auth WHERE authId = ?) ' +
+			'THEN 1 ELSE 0 END as flagged FROM User, Patient ' +
 			' WHERE User.id = Patient.userId';
-		const results = await db.query(sql);
+		const results = await db.query(sql, [userId]);
 		if (results.length === 0) {
 			throw new Error('Zero Patients exist');
 		}
@@ -128,6 +131,20 @@ export default class PatientService {
 		}
 	}
 
+	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		for (const person of people) {
+			let sql = 'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?';
+			const [rows] = await db.query(sql, [person.phoneNumber, person.email]);
+			if (rows.length ==0) {
+				throw new Error('Reportee is not a user');
+			}
+			sql = 'INSERT INTO InContact VALUES (?,?, NOW())';
+			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
+		}
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -169,6 +186,5 @@ export default class PatientService {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
-
 
 }

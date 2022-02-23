@@ -41,7 +41,6 @@ export default class UserService {
 		user.dob = patient.dob;
 		user.gender = patient.gender;
 		user.role = 'patient';
-		user.flagged = patient.flagged;
 		return user;
 	}
 
@@ -57,14 +56,14 @@ export default class UserService {
 
 	async getPatient(userId: string): Promise<IPatient> {
 		const db: any = Container.get('mysql');
-		const sql = 'SELECT medicalId, testResult, dob, gender, flagged FROM Patient WHERE userId = ?';
+		const sql = 'SELECT medicalId, testResult, dob, gender FROM Patient WHERE userId = ?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
 			throw new Error('User not found');
 		}
 		return {
 			medicalId: rows[0].medicalId, testResult: rows[0].testResult,
-			dob: rows[0].dob, gender: rows[0].gender, flagged: rows[0].flagged
+			dob: rows[0].dob, gender: rows[0].gender
 		};
 	}
 
