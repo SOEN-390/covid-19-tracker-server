@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor Actor
+participant UIClient
+participant HTTP_Request
+participant Server_Service
+entity Firebase
+
+Actor -> UIClient ++: Any server request
+
+UIClient -> Firebase ++: Get Firebase Auth token
+Firebase --> UIClient : Firebase Auth token
+
+UIClient -> HTTP_Request ++: Request, Middleware JWT Firebase Auth token
+HTTP_Request -> Firebase : Validate Firebase token
+Firebase --> HTTP_Request --: Validation + UserId Token
+
+HTTP_Request -> Server_Service ++: Check Role + Do Request
+Server_Service --> HTTP_Request --: Reply
+
+HTTP_Request --> UIClient --: Request Reply
+UIClient --> Actor --: Success or Error
+
+@enduml
