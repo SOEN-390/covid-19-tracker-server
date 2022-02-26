@@ -100,16 +100,15 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		switch (role) {
-			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL:
-				sql = 'INSERT INTO Flagged_Auth VALUES (?,?)';
-				await db.query(sql, [medicalId, userId]);
-				return;
-			case UserType.DOCTOR:
-				await this.verifyAssignee(userId, medicalId);
-				sql = 'UPDATE Patient SET flagged = true WHERE medicalId = ?';
-				await db.query(sql, [medicalId]);
-				return;
+		if (role == UserType.HEALTH_OFFICIAL || role == UserType.IMMIGRATION_OFFICER || role == UserType.ADMIN) {
+			sql = 'INSERT INTO Flagged_Auth VALUES (?,?)';
+			await db.query(sql, [medicalId, userId]);
+			return;
+		}
+		if (role == UserType.DOCTOR) {
+			await this.verifyAssignee(userId, medicalId);
+			sql = 'UPDATE Patient SET flagged = true WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
 		}
 	}
 
@@ -118,16 +117,16 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		switch (role) {
-			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL:
-				sql = 'DELETE FROM Flagged_Auth WHERE medicalId =? AND authId =?';
-				await db.query(sql, [medicalId, userId]);
-				return;
-			case UserType.DOCTOR:
-				await this.verifyAssignee(userId, medicalId);
-				sql = 'UPDATE Patient SET flagged = false WHERE medicalId = ?';
-				await db.query(sql, [medicalId]);
-				return;
+		if (role == UserType.ADMIN || role == UserType.IMMIGRATION_OFFICER || role ==UserType.HEALTH_OFFICIAL) {
+			sql = 'DELETE FROM Flagged_Auth WHERE medicalId =? AND authId =?';
+			await db.query(sql, [medicalId, userId]);
+			return;
+		}
+		if (role == UserType.DOCTOR) {
+			await this.verifyAssignee(userId, medicalId);
+			sql = 'UPDATE Patient SET flagged = false WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
+			return;
 		}
 	}
 
