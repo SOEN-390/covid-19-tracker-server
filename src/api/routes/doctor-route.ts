@@ -73,18 +73,18 @@ export default (app: Router) => {
 					licenseId: Joi.string().required()}),
 				body: Joi.object({
 					checklist: Joi.array()})
-	}), 
+			}),
 		async (req, res, next) => {
-		console.debug('Calling request symptoms from patient..');
-		try {
-			const userId = getUserAuth(req.headers).user_id;
-			const doctorServiceInstance = Container.get(DoctorService);
-			await doctorServiceInstance.requestSymptomsFromPatient(userId, req.params.medicalId, req.params.licenseId,
-				req.body.checklist as string[]);
-		} catch (e) {
-			return next(e);
-		}
-	});
+			console.debug('Calling request symptoms from patient..');
+			try {
+				const userId = getUserAuth(req.headers).user_id;
+				const doctorServiceInstance = Container.get(DoctorService);
+				await doctorServiceInstance.requestSymptomsFromPatient(userId, req.params.medicalId, req.params.licenseId,
+					req.body.checklist as string[]);
+			} catch (e) {
+				return next(e);
+			}
+		});
 
 	route.get('/patient/:medicalId', middleware.authenticateJWT,
 		celebrate({
