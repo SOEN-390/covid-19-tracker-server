@@ -1,6 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IPatient, IPatientData, IPatientReturnData, IReportPatient, UserType } from '../interfaces/IPatient';
 import { IUser } from '../interfaces/IUser';
+import { ISymptom } from '../interfaces/ISymptom';
 
 @Service()
 export default class PatientService {
@@ -144,6 +145,27 @@ export default class PatientService {
 		}
 	}
 
+	async getMyRequestedSymptoms(userId: string, medicalId: string): Promise<ISymptom[]> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT name, description FROM Request, Symptoms ' +
+			'WHERE medicalId = ? AND symptom = Symptoms.name AND response is null';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length ==0) {
+			throw new Error('No requested symptoms at the moment');
+		}
+		return rows;
+	}
+
+	async submitSymptomsResponse(userId: string, medicalId: string, responseList: ISymptom[]) {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		for (const symptom of responseList) {
+			const sql = 'UPDATE Request SET response = ? WHERE medicalId = ? AND symptom = ?'
+			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
+		}
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -185,5 +207,7 @@ export default class PatientService {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
+
+
 
 }

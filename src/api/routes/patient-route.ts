@@ -5,6 +5,7 @@ import { Container } from 'typedi';
 import middleware from '../middleware';
 import { IPatientData, IReportPatient } from '../../interfaces/IPatient';
 import { getUserAuth } from '../middleware/userAuthData';
+import { ISymptom } from '../../interfaces/ISymptom';
 
 const route = Router();
 
@@ -148,5 +149,45 @@ export default (app: Router) => {
 			});
 		}
 	);
+
+	route.get('/:medicalId/symptoms', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get requested symptoms..');
+			const userId = getUserAuth(req.headers).user_id;
+			const patientServiceInstance = Container.get(PatientService);
+			patientServiceInstance.getMyRequestedSymptoms(userId, req.params.medicalId).then((symptoms) => {
+				return res.json(symptoms);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.post('/:medicalId/symptoms/response', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			}),
+			body: Joi.object({
+				responseList: Joi.array()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling submit symptoms response..');
+			try {
+				const userId = getUserAuth(req.headers).user_id;
+				const patientServiceInstance = Container.get(PatientService);
+				await patientServiceInstance.submitSymptomsResponse(userId, req.params.medicalId,
+					req.body.responseList as ISymptom[]);
+				return res.status(200).end();
+			} catch (error) {
+				return next(error);
+			}
+		}
+	);
+
 
 };
