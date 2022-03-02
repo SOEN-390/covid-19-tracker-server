@@ -161,7 +161,7 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
-			const sql = 'UPDATE Request SET response = ? WHERE medicalId = ? AND symptom = ?'
+			const sql = 'UPDATE Request SET response = ? WHERE medicalId = ? AND symptom = ?';
 			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
 		}
 	}
