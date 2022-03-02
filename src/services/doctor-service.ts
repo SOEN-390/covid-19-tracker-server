@@ -1,6 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IDoctorReturnData } from '../interfaces/IDoctor';
 import { IPatientReturnData } from '../interfaces/IPatient';
+import { ISymptom } from '../interfaces/ISymptom';
 
 @Service()
 export default class DoctorService {
@@ -66,6 +67,40 @@ export default class DoctorService {
 		};
 	}
 
+	async getSymptoms(userId: string): Promise<ISymptom[]> {
+		const symptoms =[];
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT name, description FROM Symptoms';
+		const [rows] = await db.query(sql);
+		if (rows.length === 0) {
+			throw new Error('Symptoms do not exist');
+		}
+		for (const symptom of rows) {
+			symptoms.push(symptom);
+		}
+		return symptoms;
+	}
+
+	async requestSymptomsFromPatient(userId: string, medicalId: string, licenseId: string, checklist: string[]): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		await this.checkPendingRequest(medicalId, licenseId);
+		const sql = 'INSERT INTO Request VALUES (?, ?, ?, ?, NOW())';
+		for (const name of checklist) {
+			await db.query(sql, [medicalId, licenseId, name, null]);
+		}
+	}
+
+	async checkPendingRequest(medicalId: string, licenseId: string) {
+		const db: any = Container.get('mysql');
+		const sql = 'SELECT * FROM Request WHERE medicalId = ? AND licenseId = ? AND response is null';
+		const [rows] = await db.query(sql, [medicalId, licenseId]);
+		if (rows.length > 0) {
+			throw new Error('Already requested');
+		}
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -75,6 +110,7 @@ export default class DoctorService {
 			throw new Error('User does not exist');
 		}
 	}
+
 
 
 }
