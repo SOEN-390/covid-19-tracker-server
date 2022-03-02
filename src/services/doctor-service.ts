@@ -76,9 +76,9 @@ export default class DoctorService {
 		if (rows.length === 0) {
 			throw new Error('Symptoms do not exist');
 		}
-		rows.forEach((symptom) => {
+		for (const symptom of rows) {
 			symptoms.push(symptom);
-		});
+		}
 		return symptoms;
 	}
 
