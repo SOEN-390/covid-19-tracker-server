@@ -6,6 +6,7 @@ import middleware from '../middleware';
 import { IDoctorData } from '../../interfaces/IDoctor';
 import { getUserAuth } from '../middleware/userAuthData';
 import PatientService from '../../services/patient-service';
+import { ISymptom } from '../../interfaces/ISymptom';
 
 const route = Router();
 
@@ -48,6 +49,42 @@ export default (app: Router) => {
 			}).catch((error) => {
 				return next(error);
 			});
+		}
+	);
+
+	route.get('/symptoms', middleware.authenticateJWT,
+		async (req, res, next) => {
+			console.debug('Calling get symptoms..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getSymptoms(userId).then((symptoms) => {
+				return res.json(symptoms);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.post('/:licenseId/patient/:medicalId/symptoms', middleware.authenticateJWT, celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required(),
+				licenseId: Joi.string().required()
+			}),
+			body: Joi.object({
+				checklist: Joi.array()
+			})
+		}),
+		async (req, res, next) => {
+			console.debug('Calling request symptoms from patient..');
+			try {
+				const userId = getUserAuth(req.headers).user_id;
+				const doctorServiceInstance = Container.get(DoctorService);
+				await doctorServiceInstance.requestSymptomsFromPatient(userId, req.params.medicalId, req.params.licenseId,
+					req.body.checklist as string[]);
+			}
+			catch (e) {
+				return next(e);
+			}
 		}
 	);
 
