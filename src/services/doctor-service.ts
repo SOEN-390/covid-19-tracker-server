@@ -68,7 +68,6 @@ export default class DoctorService {
 	}
 
 	async getSymptoms(userId: string): Promise<ISymptom[]> {
-		const symptoms =[];
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'SELECT name, description FROM Symptoms';
@@ -76,10 +75,7 @@ export default class DoctorService {
 		if (rows.length === 0) {
 			throw new Error('Symptoms do not exist');
 		}
-		for (const symptom of rows) {
-			symptoms.push(symptom);
-		}
-		return symptoms;
+		return rows;
 	}
 
 	async requestSymptomsFromPatient(userId: string, medicalId: string, licenseId: string, checklist: string[]): Promise<void> {

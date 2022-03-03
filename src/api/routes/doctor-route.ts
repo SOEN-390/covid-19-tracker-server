@@ -81,6 +81,7 @@ export default (app: Router) => {
 				const doctorServiceInstance = Container.get(DoctorService);
 				await doctorServiceInstance.requestSymptomsFromPatient(userId, req.params.medicalId, req.params.licenseId,
 					req.body.checklist as string[]);
+				return res.status(200).end();
 			} catch (e) {
 				return next(e);
 			}

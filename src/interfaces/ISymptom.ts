@@ -1,4 +1,5 @@
 export interface ISymptom {
 	name: string,
-	description: string
+	description: string,
+	isChecked?: boolean
 }
