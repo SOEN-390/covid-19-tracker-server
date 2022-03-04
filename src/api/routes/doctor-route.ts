@@ -87,6 +87,23 @@ export default (app: Router) => {
 			}
 		});
 
+	route.get('/patient/:medicalId/symptoms/response', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get symptoms response of patient..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getSymptomsResponse(userId, req.params.medicalId as string).then((symptomsResponse) => {
+				return res.json(symptomsResponse);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 	route.get('/patient/:medicalId', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
@@ -103,6 +120,8 @@ export default (app: Router) => {
 			});
 		}
 	);
+
+
 
 };
 

@@ -1,7 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IDoctorReturnData } from '../interfaces/IDoctor';
 import { IPatientReturnData } from '../interfaces/IPatient';
-import { ISymptom } from '../interfaces/ISymptom';
+import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
 
 @Service()
 export default class DoctorService {
@@ -82,10 +82,22 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.checkPendingRequest(medicalId, licenseId);
-		const sql = 'INSERT INTO Request VALUES (?, ?, ?, ?, NOW())';
+		const sql = 'INSERT INTO Request VALUES (?, ?, ?, ?, ?)';
 		for (const name of checklist) {
-			await db.query(sql, [medicalId, licenseId, name, null]);
+			await db.query(sql, [medicalId, licenseId, name, null, null]);
 		}
+	}
+
+	async getSymptomsResponse(userId: string, medicalId: string): Promise<ISymptomResponse[]> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT name, description, response, onDate FROM Request, Symptoms ' +
+			'WHERE medicalId = ? AND name = symptom AND response is not null';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length === 0) {
+			throw new Error('No response submitted by patient');
+		}
+		return rows;
 	}
 
 	async checkPendingRequest(medicalId: string, licenseId: string) {
