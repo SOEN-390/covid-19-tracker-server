@@ -131,6 +131,36 @@ export default class PatientService {
 		}
 	}
 
+
+	async reviewPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		await this.verifyRole(userId, role);
+		let sql = '';
+		
+		if (role == UserType.DOCTOR) {
+			await this.verifyAssignee(userId, medicalId);
+			sql = 'UPDATE Patient SET reviewed = true WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
+			return;
+		}
+	}
+
+	async unReviewPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		await this.verifyRole(userId, role);
+		let sql = '';
+		if (role == UserType.DOCTOR) {
+			await this.verifyAssignee(userId, medicalId);
+			sql = 'UPDATE Patient SET reviewed = false WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
+			return;
+		}
+	}
+
+
+
 	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
