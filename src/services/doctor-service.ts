@@ -88,12 +88,12 @@ export default class DoctorService {
 		}
 	}
 
-	async getSymptomsResponse(userId: string, medicalId: string): Promise<ISymptomResponse[]> {
+	async getPatientSymptomsHistory(userId: string, licenseId: string, medicalId: string): Promise<ISymptomResponse[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'SELECT name, description, response, onDate FROM Request, Symptoms ' +
-			'WHERE medicalId = ? AND name = symptom AND response is not null';
-		const [rows] = await db.query(sql, medicalId);
+			'WHERE medicalId = ? AND licenseId = ? AND name = symptom AND response is not null ORDER by onDate desc';
+		const [rows] = await db.query(sql, [medicalId, licenseId]);
 		if (rows.length === 0) {
 			throw new Error('No response submitted by patient');
 		}

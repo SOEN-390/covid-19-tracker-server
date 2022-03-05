@@ -87,16 +87,18 @@ export default (app: Router) => {
 			}
 		});
 
-	route.get('/patient/:medicalId/symptoms/response', middleware.authenticateJWT,
+	route.get('/:licenseId/patient/:medicalId/symptoms/history', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
+				licenseId: Joi.string().required(),
 				medicalId: Joi.string().required()
 			})
 		}), async (req, res, next) => {
 			console.debug('Calling get symptoms response of patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const doctorServiceInstance = Container.get(DoctorService);
-			doctorServiceInstance.getSymptomsResponse(userId, req.params.medicalId as string).then((symptomsResponse) => {
+			doctorServiceInstance.getPatientSymptomsHistory(userId, req.params.licenseId as string,
+				req.params.medicalId as string).then((symptomsResponse) => {
 				return res.json(symptomsResponse);
 			}).catch((error) => {
 				return next(error);
