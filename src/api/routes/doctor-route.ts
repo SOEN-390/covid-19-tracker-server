@@ -106,6 +106,23 @@ export default (app: Router) => {
 		}
 	);
 
+	route.get('/patient/:medicalId/contacts', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get patients contacts..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getPatientContacts(userId, req.params.medicalId).then((contacts) => {
+				return res.json(contacts);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 	route.get('/patient/:medicalId', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
@@ -122,8 +139,6 @@ export default (app: Router) => {
 			});
 		}
 	);
-
-
 
 };
 
