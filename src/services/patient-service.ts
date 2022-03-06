@@ -140,7 +140,7 @@ export default class PatientService {
 			if (rows.length ==0) {
 				throw new Error('Reportee is not a user');
 			}
-			sql = 'INSERT INTO InContact VALUES (?,?, NOW())';
+			sql = 'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
 			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
 		}
 	}
@@ -161,7 +161,9 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
-			const sql = 'UPDATE Request SET response = ? WHERE medicalId = ? AND symptom = ?';
+			const sql = 'UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
+				' WHERE medicalId = ? ' +
+				'AND symptom = ? AND onDate is null AND response is null';
 			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
 		}
 	}
