@@ -34,14 +34,14 @@ export interface IPatientReturnData {
 }
 
 export interface IReportPatient {
-	fistName: string,
+	firstName: string,
 	lastName: string,
 	email: string,
 	phoneNumber: string
 }
 
 export interface IContact {
-	fistName: string,
+	firstName: string,
 	lastName: string,
 	testResult: testResult
 }
