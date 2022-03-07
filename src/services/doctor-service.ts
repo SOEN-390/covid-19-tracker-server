@@ -112,7 +112,7 @@ export default class DoctorService {
 	async getPatientContacts(userId: string, medicalId: string): Promise<IContact[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT firstName, lastname, testResult FROM User, Patient, InContact \n' +
+		const sql = 'SELECT firstName, lastName, testResult FROM User, Patient, InContact \n' +
 			'WHERE reporterId = ? AND  reporteeId = Patient.medicalId AND Patient.userId = User.id';
 		const [rows] = await db.query(sql, medicalId);
 		if (rows.length == 0) {
