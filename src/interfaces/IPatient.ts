@@ -41,6 +41,7 @@ export interface IReportPatient {
 }
 
 export interface IContact {
+	medicalId: any,
 	firstName: string,
 	lastName: string,
 	testResult: testResult
