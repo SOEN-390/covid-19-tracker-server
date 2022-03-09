@@ -31,8 +31,24 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email,' +
-			' dob, gender, flagged FROM User, Patient WHERE Patient.doctorId=? AND User.id = Patient.userId';
+		const sql = `SELECT medicalId,
+							patientUser.firstName,
+							patientUser.lastName,
+							testResult,
+							patientUser.phoneNumber,
+							patientUser.address,
+							patientUser.email,
+							dob,
+							gender,
+							flagged
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
+						  Doctor
+					 WHERE Patient.doctorId = ?
+					   AND patientUser.id = Patient.userId
+					   AND Patient.doctorId = Doctor.licenseId
+					   AND doctorUser.id = Doctor.id`;
 		const [rows] = await db.query(sql, licenseId);
 		if (rows.length === 0) {
 			throw new Error('No patients assigned');
@@ -46,9 +62,28 @@ export default class DoctorService {
 	async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email,' +
-			' dob, gender, flagged FROM User, Patient ' +
-			'WHERE User.id = Patient.userId AND medicalId=?';
+		const sql = `SELECT medicalId,
+							patientUser.firstName,
+							patientUser.lastName,
+							testResult,
+							CONCAT(doctorUser.firstName, ' ', doctorUser.lastName) as doctorName,
+							patientUser.phoneNumber,
+							patientUser.address,
+							patientUser.email,
+							dob,
+							gender,
+							CASE
+								WHEN medicalId IN
+									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
+								ELSE 0 END                                         as flagged
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
+						  Doctor
+					 WHERE patientUser.id = Patient.userId
+					   AND medicalId = ?
+					   AND Patient.doctorId = Doctor.licenseId
+					   AND doctorUser.id = Doctor.id`;
 		const [rows] = await db.query(sql, medicalId);
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
@@ -58,6 +93,7 @@ export default class DoctorService {
 			firstName: rows[0].firstName,
 			lastName: rows[0].lastName,
 			testResult: rows[0].testResult,
+			doctorName: rows[0].doctorName,
 			phoneNumber: rows[0].phoneNumber,
 			address: rows[0].address,
 			email: rows[0].email,
@@ -118,7 +154,6 @@ export default class DoctorService {
 			throw new Error('User does not exist');
 		}
 	}
-
 
 
 }

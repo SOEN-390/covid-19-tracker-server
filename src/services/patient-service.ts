@@ -49,9 +49,28 @@ export default class PatientService {
 	async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email, dob,' +
-			' gender, CASE WHEN medicalId IN (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) ' +
-			'THEN 1 ELSE 0 END as flagged FROM User, Patient WHERE User.id = Patient.userId AND medicalId= ?';
+		const sql = `SELECT medicalId,
+							patientUser.firstName,
+							patientUser.lastName,
+							testResult,
+							CONCAT(doctorUser.firstName, ' ', doctorUser.lastName) as doctorName,
+							patientUser.phoneNumber,
+							patientUser.address,
+							patientUser.email,
+							dob,
+							gender,
+							CASE
+								WHEN medicalId IN
+									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
+								ELSE 0 END                                         as flagged
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
+						  Doctor
+					 WHERE patientUser.id = Patient.userId
+					   AND medicalId = ?
+					   AND Patient.doctorId = Doctor.licenseId
+					   AND doctorUser.id = Doctor.id`;
 		const [rows] = await db.query(sql, [medicalId, userId, medicalId]);
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
@@ -61,6 +80,7 @@ export default class PatientService {
 			firstName: rows[0].firstName,
 			lastName: rows[0].lastName,
 			testResult: rows[0].testResult,
+			doctorName: rows[0].doctorName,
 			phoneNumber: rows[0].phoneNumber,
 			address: rows[0].address,
 			email: rows[0].email,
@@ -75,11 +95,26 @@ export default class PatientService {
 		const patientsArray: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT medicalId, firstName, lastName, testResult, phoneNumber, address, email, ' +
-			'dob, gender, CASE WHEN medicalId IN ' +
-			'(SELECT medicalId From Flagged_Auth WHERE authId = ?) ' +
-			'THEN 1 ELSE 0 END as flagged FROM User, Patient ' +
-			' WHERE User.id = Patient.userId';
+		const sql = `SELECT medicalId,
+							patientUser.firstName,
+							patientUser.lastName,
+							testResult,
+							CONCAT(doctorUser.firstName, ' ', doctorUser.lastName) as doctorName,
+							patientUser.phoneNumber,
+							patientUser.address,
+							patientUser.email,
+							dob,
+							gender,
+							CASE
+								WHEN medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?) THEN 1
+								ELSE 0 END as flagged
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
+						  Doctor
+					 WHERE patientUser.id = Patient.userId
+					   AND Patient.doctorId = Doctor.licenseId
+					   AND doctorUser.id = Doctor.id`;
 		const results = await db.query(sql, [userId]);
 		if (results.length === 0) {
 			throw new Error('Zero Patients exist');
@@ -119,7 +154,7 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		if (role == UserType.ADMIN || role == UserType.IMMIGRATION_OFFICER || role ==UserType.HEALTH_OFFICIAL) {
+		if (role == UserType.ADMIN || role == UserType.IMMIGRATION_OFFICER || role == UserType.HEALTH_OFFICIAL) {
 			sql = 'DELETE FROM Flagged_Auth WHERE medicalId =? AND authId =?';
 			await db.query(sql, [medicalId, userId]);
 			return;
@@ -138,7 +173,7 @@ export default class PatientService {
 		for (const person of people) {
 			let sql = 'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?';
 			const [rows] = await db.query(sql, [person.phoneNumber, person.email]);
-			if (rows.length ==0) {
+			if (rows.length == 0) {
 				throw new Error('Reportee is not a user');
 			}
 			sql = 'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
@@ -152,7 +187,7 @@ export default class PatientService {
 		const sql = 'SELECT name, description FROM Request, Symptoms ' +
 			'WHERE medicalId = ? AND symptom = Symptoms.name AND response is null';
 		const [rows] = await db.query(sql, medicalId);
-		if (rows.length ==0) {
+		if (rows.length == 0) {
 			throw new Error('No requested symptoms at the moment');
 		}
 		return rows;
@@ -210,7 +245,6 @@ export default class PatientService {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
-
 
 
 }
