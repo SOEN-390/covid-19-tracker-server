@@ -5,6 +5,9 @@ const authenticateJWT = async (req, res, next) => {
 
 	if (authHeader) {
 		const idToken = authHeader.split(' ')[1];
+		if (!idToken) {
+			return res.sendStatus(403);
+		}
 		admin
 			.auth()
 			.verifyIdToken(idToken)
