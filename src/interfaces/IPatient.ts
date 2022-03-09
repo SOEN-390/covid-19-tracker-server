@@ -24,6 +24,7 @@ export interface IPatientReturnData {
 	firstName: string,
 	lastName: string,
 	testResult: testResult,
+	doctorName: string,
 	phoneNumber: string,
 	address: string,
 	email: string,
