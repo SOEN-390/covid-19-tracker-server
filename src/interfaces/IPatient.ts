@@ -16,6 +16,7 @@ export interface IPatient {
 	dob: string,
 	gender: gender,
 	flagged?: boolean
+	reviewed?: boolean
 }
 
 export interface IPatientReturnData {
