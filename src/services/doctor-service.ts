@@ -40,7 +40,8 @@ export default class DoctorService {
 							patientUser.email,
 							dob,
 							gender,
-							flagged
+							flagged,
+							reviewed
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
