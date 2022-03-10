@@ -104,6 +104,46 @@ export default (app: Router) => {
 		}
 	);
 
+	route.patch('/:medicalId/review', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			}),
+			body: Joi.object({
+				role: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling reviewed patient..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.reviewPatient(userId, req.params.medicalId).then((patient) => {
+				return res.status(200).end();
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.patch('/:medicalId/unreview', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			}),
+			body: Joi.object({
+				role: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling unreviewed patient..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.unReviewPatient(userId, req.params.medicalId).then((patient) => {
+				return res.status(200).end();
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 };
 
 
