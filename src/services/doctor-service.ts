@@ -40,7 +40,8 @@ export default class DoctorService {
 							patientUser.email,
 							dob,
 							gender,
-							flagged
+							flagged,
+							reviewed
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -155,5 +156,19 @@ export default class DoctorService {
 		}
 	}
 
+	async reviewPatient(userId: string, medicalId: string,): Promise<void> {
+		const db: any = Container.get('mysql');
+		let sql = '';
+		sql = 'UPDATE Patient SET reviewed = true WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
 
+	async unReviewPatient(userId: string, medicalId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+		let sql = '';
+		sql = 'UPDATE Patient SET reviewed = false WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
 }

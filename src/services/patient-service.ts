@@ -166,7 +166,7 @@ export default class PatientService {
 			return;
 		}
 	}
-
+	
 	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);

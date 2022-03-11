@@ -129,7 +129,7 @@ export default (app: Router) => {
 			});
 		}
 	);
-
+	
 	route.post('/:medicalId/report', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
