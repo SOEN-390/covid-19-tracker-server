@@ -104,7 +104,7 @@ export default (app: Router) => {
 				return res.json(symptomsResponse);
 			}).catch((error) => {
 				return next(error);
-				});
+			});
 		}
 	);
 
