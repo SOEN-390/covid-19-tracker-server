@@ -85,7 +85,7 @@ export default class DoctorService {
 					   AND medicalId = ?
 					   AND Patient.doctorId = Doctor.licenseId
 					   AND doctorUser.id = Doctor.id`;
-		const [rows] = await db.query(sql, medicalId);
+		const [rows] = await db.query(sql, [medicalId, userId, medicalId]);
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
 		}
