@@ -43,7 +43,7 @@ export interface IReportPatient {
 }
 
 export interface IContact {
-	medicalId: any,
+	medicalId: string,
 	firstName: string,
 	lastName: string,
 	testResult: testResult
