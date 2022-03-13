@@ -26,7 +26,7 @@ export default class DoctorService {
 		return doctorsArray;
 	}
 
-	async getAssignedPatients(userId: any, licenseId: string): Promise<IPatientReturnData[]> {
+	async getAssignedPatients(userId: string, licenseId: string): Promise<IPatientReturnData[]> {
 		const patients: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
 
