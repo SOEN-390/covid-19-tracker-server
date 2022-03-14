@@ -95,26 +95,26 @@ export default class PatientService {
 		const patientsArray: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = `SELECT medicalId,
-							patientUser.firstName,
-							patientUser.lastName,
-							testResult,
-							CONCAT(doctorUser.firstName, ' ', doctorUser.lastName) as doctorName,
-							patientUser.phoneNumber,
-							patientUser.address,
-							patientUser.email,
-							dob,
-							gender,
-							CASE
-								WHEN medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?) THEN 1
-								ELSE 0 END as flagged
+		const sql = `SELECT DISTINCT medicalId,
+									 patientUser.firstName,
+									 patientUser.lastName,
+									 testResult,
+									 IF(Patient.doctorId IS NOT NULL,
+										CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
+									 patientUser.phoneNumber,
+									 patientUser.address,
+									 patientUser.email,
+									 dob,
+									 gender,
+									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
+										0)                                                                        as flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
 						  Doctor
 					 WHERE patientUser.id = Patient.userId
-					   AND Patient.doctorId = Doctor.licenseId
-					   AND doctorUser.id = Doctor.id`;
+					   AND IF(Patient.doctorId IS NOT NULL,
+							  Patient.doctorId = Doctor.licenseId AND doctorUser.id = Doctor.id, true)`;
 		const results = await db.query(sql, [userId]);
 		if (results.length === 0) {
 			throw new Error('Zero Patients exist');
