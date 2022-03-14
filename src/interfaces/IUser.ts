@@ -10,7 +10,9 @@ export interface IUser {
 }
 
 export interface IUserReturnData {
-	id?: string,
+	id: string,
+	medicalId?: string,
+	licenseId?: string,
 	firstName: string,
 	lastName: string,
 	address: string,
