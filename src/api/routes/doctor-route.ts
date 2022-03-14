@@ -70,9 +70,11 @@ export default (app: Router) => {
 			{
 				params: Joi.object({
 					medicalId: Joi.string().required(),
-					licenseId: Joi.string().required()}),
+					licenseId: Joi.string().required()
+				}),
 				body: Joi.object({
-					checklist: Joi.array()})
+					checklist: Joi.array()
+				})
 			}),
 		async (req, res, next) => {
 			console.debug('Calling request symptoms from patient..');
@@ -98,8 +100,25 @@ export default (app: Router) => {
 			const userId = getUserAuth(req.headers).user_id;
 			const doctorServiceInstance = Container.get(DoctorService);
 			doctorServiceInstance.getPatientSymptomsHistory(userId, req.params.licenseId as string,
-				req.params.medicalId as string).then((symptomsResponse) => {
+			req.params.medicalId as string).then((symptomsResponse) => {
 				return res.json(symptomsResponse);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
+	route.get('/patient/:medicalId/contacts', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get patients contacts..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getPatientContacts(userId, req.params.medicalId).then((contacts) => {
+				return res.json(contacts);
 			}).catch((error) => {
 				return next(error);
 			});

@@ -1,3 +1,5 @@
+
+
 export interface IPatientData {
 	medicalId: string,
 	firstName: string,
@@ -34,11 +36,19 @@ export interface IPatientReturnData {
 }
 
 export interface IReportPatient {
-	fistName: string,
+	firstName: string,
 	lastName: string,
 	email: string,
 	phoneNumber: string
 }
+
+export interface IContact {
+	medicalId: string,
+	firstName: string,
+	lastName: string,
+	testResult: testResult
+}
+
 
 export enum testResult {
 	POSITIVE = 'positive',
@@ -59,3 +69,4 @@ export enum UserType {
 	HEALTH_OFFICIAL = 'health_official',
 	ADMIN = 'admin'
 }
+

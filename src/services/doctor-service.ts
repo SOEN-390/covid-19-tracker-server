@@ -1,6 +1,6 @@
 import { Container, Service } from 'typedi';
 import { IDoctorReturnData } from '../interfaces/IDoctor';
-import { IPatientReturnData } from '../interfaces/IPatient';
+import { IContact, IPatientReturnData } from '../interfaces/IPatient';
 import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
 
 @Service()
@@ -144,6 +144,18 @@ export default class DoctorService {
 		if (rows.length > 0) {
 			throw new Error('Already requested');
 		}
+	}
+
+	async getPatientContacts(userId: string, medicalId: string): Promise<IContact[]> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT medicalId, firstName, lastName, testResult FROM User, Patient, InContact \n' +
+			'WHERE reporterId = ? AND  reporteeId = Patient.medicalId AND Patient.userId = User.id';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length == 0) {
+			throw new Error('No contacts found');
+		}
+		return rows;
 	}
 
 	// To be used for almost all functions to verify the requester user exists in our db
