@@ -26,7 +26,7 @@ export default class DoctorService {
 		return doctorsArray;
 	}
 
-	async getAssignedPatients(userId: any, licenseId: string): Promise<IPatientReturnData[]> {
+	async getAssignedPatients(userId: string, licenseId: string): Promise<IPatientReturnData[]> {
 		const patients: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
 
@@ -85,7 +85,7 @@ export default class DoctorService {
 					   AND medicalId = ?
 					   AND Patient.doctorId = Doctor.licenseId
 					   AND doctorUser.id = Doctor.id`;
-		const [rows] = await db.query(sql, medicalId);
+		const [rows] = await db.query(sql, [medicalId, userId, medicalId]);
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
 		}
