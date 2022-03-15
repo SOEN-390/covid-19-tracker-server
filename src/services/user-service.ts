@@ -17,6 +17,7 @@ export default class UserService {
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
 		}
+		user.id = rows[0].id;
 		user.firstName = rows[0].firstName;
 		user.lastName = rows[0].lastName;
 		user.address = rows[0].address;
