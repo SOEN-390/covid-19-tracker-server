@@ -29,14 +29,14 @@ export default class UserService {
 			console.log('Not an Authority');
 		}
 		try {
-			user.id = await this.getDoctor(userId);
+			user.licenseId = await this.getDoctor(userId);
 			user.role = 'doctor';
 			return user;
 		} catch (e) {
 			console.log('Not a Doctor');
 		}
 		const patient: IPatient = await this.getPatient(userId);
-		user.id = patient.medicalId;
+		user.medicalId = patient.medicalId;
 		user.testResult = patient.testResult;
 		user.dob = patient.dob;
 		user.gender = patient.gender;

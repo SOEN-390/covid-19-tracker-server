@@ -53,7 +53,8 @@ export default class PatientService {
 							patientUser.firstName,
 							patientUser.lastName,
 							testResult,
-							CONCAT(doctorUser.firstName, ' ', doctorUser.lastName) as doctorName,
+							IF(Patient.doctorId IS NOT NULL,
+							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
 							patientUser.phoneNumber,
 							patientUser.address,
 							patientUser.email,
@@ -69,8 +70,8 @@ export default class PatientService {
 						  Doctor
 					 WHERE patientUser.id = Patient.userId
 					   AND medicalId = ?
-					   AND Patient.doctorId = Doctor.licenseId
-					   AND doctorUser.id = Doctor.id`;
+					   AND IF(Patient.doctorId IS NOT NULL,
+							  Patient.doctorId = Doctor.licenseId AND doctorUser.id = Doctor.id, true)`;
 		const [rows] = await db.query(sql, [medicalId, userId, medicalId]);
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
@@ -166,7 +167,7 @@ export default class PatientService {
 			return;
 		}
 	}
-	
+
 	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
