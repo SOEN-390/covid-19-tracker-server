@@ -214,10 +214,7 @@ describe('User service unit-test', () => {
 			Container.set('mysql', mysql);
 		});
 
-		test('get user that is doctor', async () => {
-
-			testUserData.licenseId = '123';
-			testUserData.role = 'doctor'
+		test('get user that is patient', async () => {
 
 			const user = await userService.getUser(userId);
 			expect(user).toEqual({
