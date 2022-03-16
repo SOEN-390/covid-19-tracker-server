@@ -1,5 +1,3 @@
-
-
 export interface IPatientData {
 	medicalId: string,
 	firstName: string,
@@ -27,6 +25,7 @@ export interface IPatientReturnData {
 	lastName: string,
 	testResult: testResult,
 	doctorName: string,
+	doctorId?: string,
 	phoneNumber: string,
 	address: string,
 	email: string,
