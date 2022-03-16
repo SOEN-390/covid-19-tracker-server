@@ -81,7 +81,6 @@ export default class PatientService {
 							testResult,
 							IF(Patient.doctorId IS NOT NULL,
 							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL) as doctorName,
-							Patient.doctorId,
 							patientUser.phoneNumber,
 							patientUser.address,
 							patientUser.email,
