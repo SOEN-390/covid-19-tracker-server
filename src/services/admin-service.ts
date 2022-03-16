@@ -2,8 +2,6 @@ import { Container, Service } from 'typedi';
 
 @Service()
 export default class AdminService {
-	constructor() {
-	}
 
 	async unassignDoctor(
 		userId: string,

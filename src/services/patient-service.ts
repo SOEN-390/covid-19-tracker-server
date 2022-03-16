@@ -80,7 +80,7 @@ export default class PatientService {
 							patientUser.lastName,
 							testResult,
 							IF(Patient.doctorId IS NOT NULL,
-							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
+							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL) as doctorName,
 							Patient.doctorId,
 							patientUser.phoneNumber,
 							patientUser.address,
@@ -90,7 +90,7 @@ export default class PatientService {
 							CASE
 								WHEN medicalId IN
 									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
-								ELSE 0 END                                         as flagged
+								ELSE 0 END                                                   as flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -127,7 +127,7 @@ export default class PatientService {
 									 patientUser.lastName,
 									 testResult,
 									 IF(Patient.doctorId IS NOT NULL,
-										CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
+										CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL) as doctorName,
 									 Patient.doctorId,
 									 patientUser.phoneNumber,
 									 patientUser.address,
@@ -135,7 +135,7 @@ export default class PatientService {
 									 dob,
 									 gender,
 									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
-										0)                                                                        as flagged
+										0)                                                            as flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -230,7 +230,7 @@ export default class PatientService {
 				throw new Error('Reportee is not a user');
 			}
 			sql =
-				"INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), 'UTC', 'America/New_York'))";
+				'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
 			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
 		}
 	}
@@ -260,7 +260,7 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
 			const sql =
-				"UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), 'UTC', 'America/New_York')" +
+				'UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
 				' WHERE medicalId = ? ' +
 				'AND symptom = ? AND onDate is null AND response is null';
 			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
@@ -282,8 +282,8 @@ export default class PatientService {
 		let sql = '';
 		switch (role) {
 			case UserType.ADMIN ||
-				UserType.IMMIGRATION_OFFICER ||
-				UserType.HEALTH_OFFICIAL: {
+			UserType.IMMIGRATION_OFFICER ||
+			UserType.HEALTH_OFFICIAL: {
 				sql = 'SELECT * FROM Authority WHERE id=?';
 				const [rows1] = await db.query(sql, userId);
 				if (rows1.length === 0) {
