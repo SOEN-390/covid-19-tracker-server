@@ -230,7 +230,7 @@ export default class PatientService {
 				throw new Error('Reportee is not a user');
 			}
 			sql =
-				"INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), 'UTC', 'America/New_York'))";
+				'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
 			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
 		}
 	}
@@ -260,7 +260,7 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
 			const sql =
-				"UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), 'UTC', 'America/New_York')" +
+				'UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
 				' WHERE medicalId = ? ' +
 				'AND symptom = ? AND onDate is null AND response is null';
 			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
