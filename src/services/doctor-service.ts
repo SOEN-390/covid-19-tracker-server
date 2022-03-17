@@ -73,10 +73,7 @@ export default class DoctorService {
 							patientUser.email,
 							dob,
 							gender,
-							CASE
-								WHEN medicalId IN
-									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
-								ELSE 0 END                                         as flagged
+							Patient.flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
