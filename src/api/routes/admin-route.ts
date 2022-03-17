@@ -10,9 +10,7 @@ const route = Router();
 export default (app: Router) => {
 	app.use('/admins', route);
 
-	route.patch(
-		'/patient/:medicalId/doctor/:licenseId/assign',
-		middleware.authenticateJWT,
+	route.patch('/patient/:medicalId/doctor/:licenseId/assign', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
 				licenseId: Joi.string().required(),
@@ -20,6 +18,7 @@ export default (app: Router) => {
 			}),
 		}),
 		async (req, res, next) => {
+			console.debug('Calling assign patient to doctor..');
 			try {
 				const userId = getUserAuth(req.headers).user_id;
 				const adminServiceInstance = Container.get(AdminService);
@@ -38,7 +37,7 @@ export default (app: Router) => {
 	);
 
 	route.patch(
-		'/patient/:medicalId/doctor/:licenseId/unassign',
+		'/patient/:medicalId/doctor/:licenseId/un-assign',
 		middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
@@ -47,6 +46,7 @@ export default (app: Router) => {
 			}),
 		}),
 		async (req, res, next) => {
+			console.debug('Calling un-assign patient from doctor..');
 			try {
 				const userId = getUserAuth(req.headers).user_id;
 				const adminServiceInstance = Container.get(AdminService);
