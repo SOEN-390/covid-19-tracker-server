@@ -26,7 +26,7 @@ export default (app: Router) => {
 				await adminServiceInstance.assignDoctor(
 					userId,
 					req.params.medicalId,
-					req.params.license
+					req.params.licenseId
 				);
 
 				return res.status(200).end();
@@ -54,7 +54,7 @@ export default (app: Router) => {
 				await adminServiceInstance.unassignDoctor(
 					userId,
 					req.params.medicalId,
-					req.params.license
+					req.params.licenseId
 				);
 
 				return res.status(200).end();
