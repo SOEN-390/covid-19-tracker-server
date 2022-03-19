@@ -91,6 +91,33 @@ export default class PatientService {
 		};
 	}
 
+	async getPatientDoctor(userId: string, medicalId: string): Promise<{id: string, firstName: string, lastName: string}> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = `SELECT IF(Patient.doctorId IS NOT NULL,
+							   doctorUser.id, NULL)             as id,
+							IF(Patient.doctorId IS NOT NULL,
+							   doctorUser.firstName, NULL)             as firstName,
+							IF(Patient.doctorId IS NOT NULL,
+							   doctorUser.lastName, NULL)             as lastName
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
+						  Doctor
+					 WHERE patientUser.id = Patient.userId
+					   AND medicalId = ?
+					   AND IF(Patient.doctorId IS NOT NULL,
+							  Patient.doctorId = Doctor.licenseId AND doctorUser.id = Doctor.id, true)`;
+		const [rows] = await db.query(sql, [medicalId, userId, medicalId]);
+		if (rows.length === 0) {
+			throw new Error('User does not exist');
+		}
+		return {
+			id: rows[0].id,
+			firstName: rows[0].firstName,
+			lastName: rows[0].lastName,
+		};
+	}
 
 	public async getAllPatients(userId: string): Promise<IPatientReturnData[]> {
 		const patientsArray: IPatientReturnData[] = [];
@@ -138,15 +165,21 @@ export default class PatientService {
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		if (role == UserType.HEALTH_OFFICIAL || role == UserType.IMMIGRATION_OFFICER || role == UserType.ADMIN) {
+		if (role === UserType.HEALTH_OFFICIAL || role === UserType.IMMIGRATION_OFFICER || role == UserType.ADMIN) {
 			sql = 'INSERT INTO Flagged_Auth VALUES (?,?)';
 			await db.query(sql, [medicalId, userId]);
 			return;
 		}
-		if (role == UserType.DOCTOR) {
+		if (role === UserType.DOCTOR) {
 			await this.verifyAssignee(userId, medicalId);
 			sql = 'UPDATE Patient SET flagged = true WHERE medicalId = ?';
 			await db.query(sql, [medicalId]);
+			return;
+		}
+		if (role === UserType.PATIENT) {
+			sql = 'UPDATE Patient SET flagged = true WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
+			return;
 		}
 	}
 
@@ -160,8 +193,13 @@ export default class PatientService {
 			await db.query(sql, [medicalId, userId]);
 			return;
 		}
-		if (role == UserType.DOCTOR) {
+		if (role === UserType.DOCTOR) {
 			await this.verifyAssignee(userId, medicalId);
+			sql = 'UPDATE Patient SET flagged = false WHERE medicalId = ?';
+			await db.query(sql, [medicalId]);
+			return;
+		}
+		if (role === UserType.PATIENT) {
 			sql = 'UPDATE Patient SET flagged = false WHERE medicalId = ?';
 			await db.query(sql, [medicalId]);
 			return;
@@ -233,6 +271,9 @@ export default class PatientService {
 				if (rows2.length === 0) {
 					throw new Error('Role does not match');
 				}
+				return;
+			}
+			case UserType.PATIENT: {
 				return;
 			}
 		}
