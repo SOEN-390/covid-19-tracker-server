@@ -20,6 +20,7 @@ export interface IUserReturnData {
 	phoneNumber: string,
 	testResult?: testResult,
 	role: string,
+	flagged?: boolean,
 	dob?: string,
 	gender?: string
 }
