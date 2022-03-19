@@ -76,7 +76,7 @@ export default (app: Router) => {
 				medicalId: Joi.string().required()
 			})
 		}), async (req, res, next) => {
-			console.debug('Calling get patient..');
+			console.debug('Calling get doctor for patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
 			patientServiceInstance.getPatientDoctor(userId, req.params.medicalId).then((patient) => {
