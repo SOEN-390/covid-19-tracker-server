@@ -20,6 +20,7 @@ export default (app: Router) => {
 			}).catch((error) => {
 				return next(error);
 			});
-		});
+		}
+	);
 
 };
