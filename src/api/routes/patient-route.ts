@@ -70,6 +70,23 @@ export default (app: Router) => {
 		}
 	);
 
+	route.get('/:medicalId/doctor', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get patient..');
+			const userId = getUserAuth(req.headers).user_id;
+			const patientServiceInstance = Container.get(PatientService);
+			patientServiceInstance.getPatientDoctor(userId, req.params.medicalId).then((patient) => {
+				return res.json(patient);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 	route.patch('/:medicalId/status', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
@@ -129,7 +146,7 @@ export default (app: Router) => {
 			});
 		}
 	);
-	
+
 	route.post('/:medicalId/report', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
