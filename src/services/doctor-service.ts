@@ -31,7 +31,8 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = `SELECT medicalId,
+		const sql = `SELECT patientUser.id,
+       						medicalId,
 							patientUser.firstName,
 							patientUser.lastName,
 							testResult,
