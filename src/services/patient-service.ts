@@ -146,7 +146,7 @@ export default class PatientService {
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
-						  Doctor,
+						  Doctor
 					 WHERE patientUser.id = Patient.userId
 					   AND IF(Patient.doctorId IS NOT NULL,
 							  Patient.doctorId = Doctor.licenseId AND doctorUser.id = Doctor.id, true)`;
