@@ -220,7 +220,6 @@ export default class PatientService {
 	async remindPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		await this.verifyRole(userId, role);
 		let sql = '';
 
 		if (role === UserType.HEALTH_OFFICIAL) {
@@ -228,29 +227,19 @@ export default class PatientService {
 			await db.query(sql, [medicalId]);
 			return;
 		}
-		if (role === UserType.PATIENT) {
-			sql = 'UPDATE Patient SET reminded = true WHERE medicalId = ?';
-			await db.query(sql, [medicalId]);
-			return;
-		}
+
 	}
 
 	async unRemindPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		await this.verifyRole(userId, role);
 		let sql = '';
 		if (role === UserType.HEALTH_OFFICIAL) {
-			await this.verifyAssignee(userId, medicalId);
 			sql = 'UPDATE Patient SET reminded = false WHERE medicalId = ?';
 			await db.query(sql, [medicalId]);
 			return;
 		}
-		if (role === UserType.PATIENT) {
-			sql = 'UPDATE Patient SET reminded = false WHERE medicalId = ?';
-			await db.query(sql, [medicalId]);
-			return;
-		}
+
 	}
 
 
