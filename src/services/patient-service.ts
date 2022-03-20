@@ -22,8 +22,9 @@ export default class PatientService {
 
 	async createPatient(userId: string, patient: IPatient): Promise<void> {
 		const db: any = Container.get('mysql');
-		const sql = 'INSERT INTO Patient VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-		await db.query(sql, [patient.medicalId, userId, patient.testResult, null, patient.dob, patient.gender, patient.flagged, patient.reviewed, patient.reminded]);
+		const sql = 'INSERT INTO Patient VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
+		await db.query(sql, [patient.medicalId, userId, patient.testResult, null, patient.dob,
+		patient.gender, patient.flagged, patient.reviewed, patient.reminded]);
 	}
 
 
@@ -43,7 +44,7 @@ export default class PatientService {
 			gender: userInfo.gender,
 			flagged: false,
 			reviewed: false,
-			reminded: false
+			reminded: false,
 		};
 	}
 
@@ -61,6 +62,8 @@ export default class PatientService {
 							patientUser.email,
 							dob,
 							gender,
+							reminded,
+							lastUpdated,
 							CASE
 								WHEN medicalId IN
 									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
@@ -90,8 +93,8 @@ export default class PatientService {
 			dob: rows[0].dob,
 			gender: rows[0].gender,
 			flagged: rows[0].flagged,
-			reminded: rows[0].reminded
-
+			reminded: rows[0].reminded,
+			lastUpdated: rows[0].lastUpdated
 		};
 	}
 
@@ -139,7 +142,7 @@ export default class PatientService {
 									 dob,
 									 gender,
 									 reminded,
-		
+									 lastUpdated,
 									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
 										0) as flagged
 										
@@ -163,7 +166,8 @@ export default class PatientService {
 	async updateTestResult(userId: any, medicalId: string, testResult: string): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'UPDATE Patient SET testResult = ? WHERE medicalId = ?';
+		const sql = 'UPDATE Patient SET testResult = ?, lastUpdated = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
+			' WHERE medicalId = ?';
 		await db.query(sql, [testResult, medicalId]);
 	}
 

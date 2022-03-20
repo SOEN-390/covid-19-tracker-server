@@ -39,7 +39,8 @@ describe('Doctor service unit-test', () => {
 			dob: '01/01/1996',
 			gender: gender.MALE,
 			flagged: false,
-			reminded: false
+			reminded: false,
+			lastUpdated: new Date()
 		};
 
 		testSymptom = {
