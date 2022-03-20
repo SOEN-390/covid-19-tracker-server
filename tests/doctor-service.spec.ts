@@ -38,7 +38,8 @@ describe('Doctor service unit-test', () => {
 			doctorName: testDoctorData.firstName + ' '+ testDoctorData.lastName,
 			dob: '01/01/1996',
 			gender: gender.MALE,
-			flagged: false
+			flagged: false,
+			lastUpdated: new Date()
 		};
 
 		testSymptom = {

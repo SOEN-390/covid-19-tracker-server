@@ -102,7 +102,8 @@ describe('Patient service unit-test', () => {
 				dob: testPatientData.dob,
 				gender: testPatientData.gender,
 				flagged: false,
-				reviewed: false
+				reviewed: false,
+				reminded: false
 			});
 		});
 	});
