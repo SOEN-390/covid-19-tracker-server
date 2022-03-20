@@ -42,7 +42,8 @@ export default class DoctorService {
 							dob,
 							gender,
 							flagged,
-							reviewed
+							reviewed,
+							reminded
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -74,7 +75,8 @@ export default class DoctorService {
 							patientUser.email,
 							dob,
 							gender,
-							Patient.flagged
+							Patient.flagged,
+							Patient.reminded
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -98,7 +100,9 @@ export default class DoctorService {
 			email: rows[0].email,
 			dob: rows[0].dob,
 			gender: rows[0].gender,
-			flagged: rows[0].flagged
+			flagged: rows[0].flagged,
+			reminded: rows[0].reminded
+
 		};
 	}
 
