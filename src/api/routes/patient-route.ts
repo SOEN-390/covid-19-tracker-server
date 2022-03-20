@@ -42,7 +42,7 @@ export default (app: Router) => {
 
 	route.get('/all', middleware.authenticateJWT,
 		async (req, res, next) => {
-			console.debug('Calling get all..');
+			console.debug('Calling get all patients..');
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
 			patientServiceInstance.getAllPatients(userId).then((patient) => {

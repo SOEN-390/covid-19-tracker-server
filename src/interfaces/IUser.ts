@@ -22,7 +22,9 @@ export interface IUserReturnData {
 	role: string,
 	flagged?: boolean,
 	dob?: string,
-	gender?: string
+	gender?: string,
+	reminded? : boolean,
+	lastUpdated?: Date
 }
 
 
