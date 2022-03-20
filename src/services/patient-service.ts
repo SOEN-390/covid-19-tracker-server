@@ -220,7 +220,6 @@ export default class PatientService {
 		let sql = '';
 
 		if (role === UserType.HEALTH_OFFICIAL) {
-			await this.verifyAssignee(userId, medicalId);
 			sql = 'UPDATE Patient SET reminded = true WHERE medicalId = ?';
 			await db.query(sql, [medicalId]);
 			return;
