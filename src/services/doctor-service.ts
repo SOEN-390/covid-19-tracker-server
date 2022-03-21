@@ -21,6 +21,7 @@ export default class DoctorService {
 							phoneNumber,
 							address,
 							email,
+       						emergencyLeave,
 							AssignedPatients.assignedPatientsCount
 					 FROM User,
 						  Doctor,
