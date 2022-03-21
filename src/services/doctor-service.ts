@@ -15,7 +15,21 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = 'SELECT firstName, lastName, licenseId, phoneNumber, address, email FROM User, Doctor WHERE User.id = Doctor.id';
+		const sql = `SELECT firstName,
+							lastName,
+							Doctor.licenseId,
+							phoneNumber,
+							address,
+							email,
+							AssignedPatients.assignedPatientsCount
+					 FROM User,
+						  Doctor,
+						  (SELECT Doctor.licenseId, COUNT(Patient.doctorId) AS assignedPatientsCount
+						   FROM Doctor
+									LEFT JOIN Patient on Doctor.licenseId = Patient.doctorId
+						   GROUP BY Doctor.licenseId) AS AssignedPatients
+					 WHERE User.id = Doctor.id
+					   AND AssignedPatients.licenseId = Doctor.licenseId`;
 		const results = await db.query(sql);
 		if (results.length === 0) {
 			throw new Error('Zero Doctors exist');
@@ -31,27 +45,11 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = `SELECT patientUser.id,
-       						medicalId,
-							patientUser.firstName,
-							patientUser.lastName,
-							testResult,
-							patientUser.phoneNumber,
-							patientUser.address,
-							patientUser.email,
-							dob,
-							gender,
-							flagged,
-							reviewed,
-							lastUpdated
-					 FROM User patientUser,
-						  Patient,
-						  User doctorUser,
+		const sql = `SELECT Patient.doctorId, COUNT(Patient.*)
+					 FROM User Patient,
 						  Doctor
-					 WHERE Patient.doctorId = ?
-					   AND patientUser.id = Patient.userId
-					   AND Patient.doctorId = Doctor.licenseId
-					   AND doctorUser.id = Doctor.id`;
+					 WHERE Patient.doctorId = Doctor.licenseId
+					 GROUP BY Patient.doctorId`;
 		const [rows] = await db.query(sql, licenseId);
 		if (rows.length === 0) {
 			throw new Error('No patients assigned');
