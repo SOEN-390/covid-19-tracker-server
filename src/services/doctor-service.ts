@@ -76,6 +76,17 @@ export default class DoctorService {
 		return patients;
 	}
 
+	async declareEmergencyLeave(userId: string, medicalId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+
+		await this.verifyUser(userId);
+
+		let sql = '';
+		sql = 'UPDATE Patient SET emergencyLeave = true WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
+
 	async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
