@@ -24,7 +24,7 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		const sql = 'INSERT INTO Patient VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
 		await db.query(sql, [patient.medicalId, userId, patient.testResult, null, patient.dob,
-		patient.gender, patient.flagged, patient.reviewed, patient.reminded]);
+			patient.gender, patient.flagged, patient.reviewed, patient.reminded]);
 	}
 
 
@@ -68,7 +68,7 @@ export default class PatientService {
 								WHEN medicalId IN
 									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
 								ELSE 0 END                                         as flagged
-							
+
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -145,7 +145,7 @@ export default class PatientService {
 									 lastUpdated,
 									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
 										0) as flagged
-										
+
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -217,29 +217,19 @@ export default class PatientService {
 		}
 	}
 
-	async remindPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+	async remindPatient(userId: string, medicalId: string): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		let sql = '';
-
-		if (role === UserType.HEALTH_OFFICIAL) {
-			sql = 'UPDATE Patient SET reminded = true WHERE medicalId = ?';
-			await db.query(sql, [medicalId]);
-			return;
-		}
-
+		const sql = 'UPDATE Patient SET reminded = true WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
 	}
 
-	async unRemindPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+	async unRemindPatient(userId: string, medicalId: string): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		let sql = '';
-		if (role === UserType.HEALTH_OFFICIAL) {
-			sql = 'UPDATE Patient SET reminded = false WHERE medicalId = ?';
-			await db.query(sql, [medicalId]);
-			return;
-		}
-
+		const sql = 'UPDATE Patient SET reminded = false WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
 	}
 
 
