@@ -68,6 +68,7 @@ export default class PatientService {
 								WHEN medicalId IN
 									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
 								ELSE 0 END                                         as flagged
+
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -97,7 +98,7 @@ export default class PatientService {
 		};
 	}
 
-	async getPatientDoctor(userId: string, medicalId: string): Promise<{id: string, firstName: string, lastName: string}> {
+	async getPatientDoctor(userId: string, medicalId: string): Promise<{ id: string, firstName: string, lastName: string }> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = `SELECT IF(Patient.doctorId IS NOT NULL,
@@ -140,9 +141,11 @@ export default class PatientService {
 									 patientUser.email,
 									 dob,
 									 gender,
+									 reminded,
 									 lastUpdated,
 									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
-										0)                                                                        as flagged
+										0) as flagged
+
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -213,6 +216,22 @@ export default class PatientService {
 			return;
 		}
 	}
+
+	async remindPatient(userId: string, medicalId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'UPDATE Patient SET reminded = true WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+	}
+
+	async unRemindPatient(userId: string, medicalId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'UPDATE Patient SET reminded = false WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
+
 
 	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
 		const db: any = Container.get('mysql');
