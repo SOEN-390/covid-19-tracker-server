@@ -15,5 +15,9 @@ export interface IDoctorReturnData {
 	firstName: string,
 	lastName: string,
 	licenseId: string,
+	phoneNumber: string,
+	address: string,
+	email: string,
+	assignedPatientsCount
 }
 
