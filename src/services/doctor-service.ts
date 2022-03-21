@@ -45,11 +45,27 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = `SELECT Patient.doctorId, COUNT(Patient.*)
-					 FROM User Patient,
+		const sql = `SELECT patientUser.id,
+							medicalId,
+							patientUser.firstName,
+							patientUser.lastName,
+							testResult,
+							patientUser.phoneNumber,
+							patientUser.address,
+							patientUser.email,
+							dob,
+							gender,
+							flagged,
+							reviewed,
+							lastUpdated
+					 FROM User patientUser,
+						  Patient,
+						  User doctorUser,
 						  Doctor
-					 WHERE Patient.doctorId = Doctor.licenseId
-					 GROUP BY Patient.doctorId`;
+					 WHERE Patient.doctorId = ?
+					   AND patientUser.id = Patient.userId
+					   AND Patient.doctorId = Doctor.licenseId
+					   AND doctorUser.id = Doctor.id`;
 		const [rows] = await db.query(sql, licenseId);
 		if (rows.length === 0) {
 			throw new Error('No patients assigned');
