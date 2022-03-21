@@ -2,6 +2,7 @@ import { gender, testResult, UserType } from '../src/interfaces/IPatient';
 import UserService from '../src/services/user-service';
 import { Container } from 'typedi';
 import { IUserReturnData } from '../src/interfaces/IUser';
+import { IDoctor } from '../src/interfaces/IDoctor';
 
 describe('User service unit-test', () => {
 
@@ -22,7 +23,7 @@ describe('User service unit-test', () => {
 			email: 'demo@demo.com',
 			phoneNumber: '000000',
 			role: 'admin'
-		}
+		};
 
 		userService = new UserService();
 
@@ -119,7 +120,7 @@ describe('User service unit-test', () => {
 
 		beforeEach(() => {
 
-			jest.spyOn(userService, "getAuthority").mockImplementation(async ()=> {
+			jest.spyOn(userService, 'getAuthority').mockImplementation(async ()=> {
 				return 'admin';
 			});
 
@@ -151,11 +152,14 @@ describe('User service unit-test', () => {
 
 		beforeEach(() => {
 
-			jest.spyOn(userService, "getDoctor").mockImplementation(async ()=> {
-				return '123';
+			jest.spyOn(userService, 'getDoctor').mockImplementation(async ()=> {
+				return {
+					licenseId: '123',
+					emergencyLeave: false
+				} as IDoctor;
 			});
 
-			jest.spyOn(userService, "getAuthority").mockImplementation(async ()=> {
+			jest.spyOn(userService, 'getAuthority').mockImplementation(async ()=> {
 				throw new Error('Not Authority');
 			});
 
@@ -172,7 +176,8 @@ describe('User service unit-test', () => {
 		test('get user that is doctor', async () => {
 
 			testUserData.licenseId = '123';
-			testUserData.role = 'doctor'
+			testUserData.emergencyLeave = false;
+			testUserData.role = 'doctor';
 
 			const user = await userService.getUser(userId);
 			expect(user).toEqual(testUserData);
@@ -189,19 +194,21 @@ describe('User service unit-test', () => {
 
 		beforeEach(() => {
 
-			jest.spyOn(userService, "getDoctor").mockImplementation(async ()=> {
+			jest.spyOn(userService, 'getDoctor').mockImplementation(async ()=> {
 				throw new Error('Not Doctor');
 			});
 
-			jest.spyOn(userService, "getAuthority").mockImplementation(async ()=> {
+			jest.spyOn(userService, 'getAuthority').mockImplementation(async ()=> {
 				throw new Error('Not Authority');
 			});
 
-			jest.spyOn(userService, "getPatient").mockImplementation(async ()=> {
-				return {medicalId: '1',
+			jest.spyOn(userService, 'getPatient').mockImplementation(async ()=> {
+				return {
+					medicalId: '1',
 					testResult: testResult.POSITIVE,
 					dob: '00',
-					gender: gender.MALE}
+					gender: gender.MALE
+				};
 			});
 
 			const rows = [testUserData];
