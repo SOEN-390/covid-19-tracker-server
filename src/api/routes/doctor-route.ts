@@ -52,6 +52,24 @@ export default (app: Router) => {
 		}
 	);
 
+	route.patch('/:licenseId/emergency-leave', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				licenseId: Joi.string().required()
+			})
+		}),
+		async (req, res, next) => {
+			console.debug('Calling get assigned patients for doctor..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.declareEmergencyLeave(userId, req.params.licenseId).then(() => {
+				return res.status(200).end();
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 	route.get('/symptoms', middleware.authenticateJWT,
 		async (req, res, next) => {
 			console.debug('Calling get symptoms..');
