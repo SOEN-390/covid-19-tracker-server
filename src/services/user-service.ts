@@ -78,7 +78,7 @@ export default class UserService {
 
 	async getDoctor(userId: string): Promise<IDoctor> {
 		const db: any = Container.get('mysql');
-		const sql = 'SELECT licenseId FROM Doctor WHERE id = ?';
+		const sql = 'SELECT licenseId, emergencyLeave FROM Doctor WHERE id = ?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
 			throw new Error('User not found');

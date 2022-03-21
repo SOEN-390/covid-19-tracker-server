@@ -186,7 +186,7 @@ export default (app: Router) => {
 			})
 		}),
 		async (req, res, next) => {
-			console.debug('Calling get assigned patients for doctor..');
+			console.debug('Calling declare emergency leave for doctor..');
 			const userId = getUserAuth(req.headers).user_id;
 			const doctorServiceInstance = Container.get(DoctorService);
 			doctorServiceInstance.declareEmergencyLeave(userId, req.params.licenseId).then(() => {
