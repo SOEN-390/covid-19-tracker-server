@@ -3,10 +3,7 @@ import { celebrate, Joi } from 'celebrate';
 import DoctorService from '../../services/doctor-service';
 import { Container } from 'typedi';
 import middleware from '../middleware';
-import { IDoctorData } from '../../interfaces/IDoctor';
 import { getUserAuth } from '../middleware/userAuthData';
-import PatientService from '../../services/patient-service';
-import { ISymptom } from '../../interfaces/ISymptom';
 
 const route = Router();
 
@@ -174,7 +171,7 @@ export default (app: Router) => {
 			console.debug('Calling unreviewed patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const doctorServiceInstance = Container.get(DoctorService);
-			doctorServiceInstance.unReviewPatient(userId, req.params.medicalId).then((patient) => {
+			doctorServiceInstance.unReviewPatient(userId, req.params.medicalId).then(() => {
 				return res.status(200).end();
 			}).catch((error) => {
 				return next(error);
@@ -182,6 +179,23 @@ export default (app: Router) => {
 		}
 	);
 
+	route.patch('/:licenseId/emergency-leave', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				licenseId: Joi.string().required()
+			})
+		}),
+		async (req, res, next) => {
+			console.debug('Calling declare emergency leave for doctor..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.declareEmergencyLeave(userId, req.params.licenseId).then(() => {
+				return res.status(200).end();
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
 
 };
 

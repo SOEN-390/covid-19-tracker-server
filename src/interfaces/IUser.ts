@@ -24,7 +24,8 @@ export interface IUserReturnData {
 	dob?: string,
 	gender?: string,
 	reminded? : boolean,
-	lastUpdated?: Date
+	lastUpdated?: Date,
+	emergencyLeave?: boolean
 }
 
 

@@ -9,6 +9,7 @@ export interface IDoctorData {
 
 export interface IDoctor {
 	licenseId: string,
+	emergencyLeave: boolean
 }
 
 export interface IDoctorReturnData {
@@ -18,6 +19,6 @@ export interface IDoctorReturnData {
 	phoneNumber: string,
 	address: string,
 	email: string,
-	assignedPatientsCount
+	assignedPatientsCount: string
 }
 
