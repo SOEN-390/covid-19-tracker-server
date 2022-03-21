@@ -218,7 +218,7 @@ export default (app: Router) => {
 			console.debug('Calling remind patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
-			patientServiceInstance.remindPatient(userId, req.params.medicalId, req.body.role).then(() => {
+			patientServiceInstance.remindPatient(userId, req.params.medicalId).then(() => {
 				return res.status(200).end();
 			}).catch((error) => {
 				return next(error);
@@ -238,15 +238,12 @@ export default (app: Router) => {
 			console.debug('Calling unremind patient..');
 			const userId = getUserAuth(req.headers).user_id;
 			const patientServiceInstance = Container.get(PatientService);
-			patientServiceInstance.remindPatient(userId, req.params.medicalId, req.body.role).then(() => {
+			patientServiceInstance.unRemindPatient(userId, req.params.medicalId).then(() => {
 				return res.status(200).end();
 			}).catch((error) => {
 				return next(error);
 			});
 		}
 	);
-
-
-
 
 };
