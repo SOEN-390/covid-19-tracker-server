@@ -1,6 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IUserReturnData } from '../interfaces/IUser';
 import { IPatient } from '../interfaces/IPatient';
+import { IDoctor } from '../interfaces/IDoctor';
 
 @Service()
 export default class UserService {
@@ -30,7 +31,9 @@ export default class UserService {
 			console.log('Not an Authority');
 		}
 		try {
-			user.licenseId = await this.getDoctor(userId);
+			const doctor: IDoctor = await this.getDoctor(userId);
+			user.licenseId = doctor.licenseId;
+			user.emergencyLeave = doctor.emergencyLeave;
 			user.role = 'doctor';
 			return user;
 		} catch (e) {
@@ -73,13 +76,16 @@ export default class UserService {
 		};
 	}
 
-	async getDoctor(userId: string): Promise<string> {
+	async getDoctor(userId: string): Promise<IDoctor> {
 		const db: any = Container.get('mysql');
 		const sql = 'SELECT licenseId FROM Doctor WHERE id = ?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
 			throw new Error('User not found');
 		}
-		return rows[0].licenseId;
+		return {
+			licenseId: rows[0].licenseId,
+			emergencyLeave: rows[0].emergencyLeave
+		};
 	}
 }
