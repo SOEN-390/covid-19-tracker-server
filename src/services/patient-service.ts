@@ -274,9 +274,8 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'SELECT name, description, response, onDate ' +
-			'FROM Request, Symptoms WHERE medicalId = ?AND response is not null ' +
-			'GROUP BY name, description ' +
-			'HAVING Max(onDate)';
+			'FROM Request, Symptoms WHERE medicalId = ? AND name = symptom ' +
+		'AND onDate = (SELECT MAX(onDate) From Request) AND response = 1';
 		const [rows] = await db.query(sql, medicalId);
 		if (rows.length === 0) {
 			throw new Error('User has not submitted any symptoms');
