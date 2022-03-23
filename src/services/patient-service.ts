@@ -1,7 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IPatient, IPatientData, IPatientReturnData, IReportPatient, UserType } from '../interfaces/IPatient';
 import { IUser } from '../interfaces/IUser';
-import { ISymptom } from '../interfaces/ISymptom';
+import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
 
 @Service()
 export default class PatientService {
@@ -270,6 +270,20 @@ export default class PatientService {
 		}
 	}
 
+	async getLatestSymptoms(userId: string, medicalId: string): Promise<ISymptomResponse> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT name, description, response, onDate ' +
+			'FROM Request, Symptoms WHERE medicalId = ? ' +
+			'GROUP BY name, description ' +
+			'HAVING Max(onDate)';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length === 0) {
+			throw new Error('User has not submitted any symptoms');
+		}
+		return rows;
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -314,6 +328,7 @@ export default class PatientService {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
+
 
 
 }

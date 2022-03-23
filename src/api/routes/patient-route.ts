@@ -246,4 +246,21 @@ export default (app: Router) => {
 		}
 	);
 
+	route.get('/:medicalId/latest-symptoms', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required()
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling get latest symptoms..');
+			const userId = getUserAuth(req.headers).user_id;
+			const patientServiceInstance = Container.get(PatientService);
+			patientServiceInstance.getLatestSymptoms(userId, req.params.medicalId).then((symptoms) => {
+				return res.json(symptoms);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 };
