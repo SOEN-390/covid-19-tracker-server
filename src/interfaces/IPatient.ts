@@ -15,8 +15,11 @@ export interface IPatient {
 	testResult: testResult,
 	dob: string,
 	gender: gender,
-	flagged?: boolean
-	reviewed?: boolean
+	flagged?: boolean,
+	reviewed?: boolean,
+	reminded?: boolean,
+	lastUpdated?: Date
+
 }
 
 export interface IPatientReturnData {
@@ -31,7 +34,10 @@ export interface IPatientReturnData {
 	email: string,
 	dob: string,
 	gender: gender,
-	flagged: boolean
+	flagged: boolean,
+	reminded: boolean,
+	lastUpdated?: Date
+
 }
 
 export interface IReportPatient {

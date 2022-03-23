@@ -15,7 +15,22 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = 'SELECT firstName, lastName, licenseId, phoneNumber, address, email FROM User, Doctor WHERE User.id = Doctor.id';
+		const sql = `SELECT firstName,
+							lastName,
+							Doctor.licenseId,
+							phoneNumber,
+							address,
+							email,
+       						emergencyLeave,
+							AssignedPatients.assignedPatientsCount
+					 FROM User,
+						  Doctor,
+						  (SELECT Doctor.licenseId, COUNT(Patient.doctorId) AS assignedPatientsCount
+						   FROM Doctor
+									LEFT JOIN Patient on Doctor.licenseId = Patient.doctorId
+						   GROUP BY Doctor.licenseId) AS AssignedPatients
+					 WHERE User.id = Doctor.id
+					   AND AssignedPatients.licenseId = Doctor.licenseId`;
 		const results = await db.query(sql);
 		if (results.length === 0) {
 			throw new Error('Zero Doctors exist');
@@ -31,7 +46,8 @@ export default class DoctorService {
 		const db: any = Container.get('mysql');
 
 		await this.verifyUser(userId);
-		const sql = `SELECT medicalId,
+		const sql = `SELECT patientUser.id,
+							medicalId,
 							patientUser.firstName,
 							patientUser.lastName,
 							testResult,
@@ -41,7 +57,8 @@ export default class DoctorService {
 							dob,
 							gender,
 							flagged,
-							reviewed
+							reviewed,
+							reminded
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -73,10 +90,8 @@ export default class DoctorService {
 							patientUser.email,
 							dob,
 							gender,
-							CASE
-								WHEN medicalId IN
-									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
-								ELSE 0 END                                         as flagged
+							lastUpdated,
+							Patient.flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -100,7 +115,9 @@ export default class DoctorService {
 			email: rows[0].email,
 			dob: rows[0].dob,
 			gender: rows[0].gender,
-			flagged: rows[0].flagged
+			flagged: rows[0].flagged,
+			reminded: rows[0].reminded,
+			lastUpdated: rows[0].lastUpdated
 		};
 	}
 
@@ -181,6 +198,17 @@ export default class DoctorService {
 		let sql = '';
 		sql = 'UPDATE Patient SET reviewed = false WHERE medicalId = ?';
 		await db.query(sql, [medicalId]);
+		return;
+	}
+
+	async declareEmergencyLeave(userId: string, licenseId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+
+		await this.verifyUser(userId);
+
+		let sql = '';
+		sql = 'UPDATE Doctor SET emergencyLeave = true WHERE licenseId = ?';
+		await db.query(sql, [licenseId]);
 		return;
 	}
 }

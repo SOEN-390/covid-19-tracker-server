@@ -35,10 +35,12 @@ describe('Doctor service unit-test', () => {
 			email: 'test@gmail.com',
 			phoneNumber: '514-555-5555',
 			testResult: testResult.POSITIVE,
-			doctorName: testDoctorData.firstName + ' '+ testDoctorData.lastName,
+			doctorName: testDoctorData.firstName + ' ' + testDoctorData.lastName,
 			dob: '01/01/1996',
 			gender: gender.MALE,
-			flagged: false
+			flagged: false,
+			reminded: false,
+			lastUpdated: new Date()
 		};
 
 		testSymptom = {

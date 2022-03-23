@@ -20,8 +20,12 @@ export interface IUserReturnData {
 	phoneNumber: string,
 	testResult?: testResult,
 	role: string,
+	flagged?: boolean,
 	dob?: string,
-	gender?: string
+	gender?: string,
+	reminded? : boolean,
+	lastUpdated?: Date,
+	emergencyLeave?: boolean
 }
 
 

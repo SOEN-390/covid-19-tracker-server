@@ -1,6 +1,7 @@
 import { Container, Service } from 'typedi';
 import { IUserReturnData } from '../interfaces/IUser';
 import { IPatient } from '../interfaces/IPatient';
+import { IDoctor } from '../interfaces/IDoctor';
 
 @Service()
 export default class UserService {
@@ -30,7 +31,9 @@ export default class UserService {
 			console.log('Not an Authority');
 		}
 		try {
-			user.licenseId = await this.getDoctor(userId);
+			const doctor: IDoctor = await this.getDoctor(userId);
+			user.licenseId = doctor.licenseId;
+			user.emergencyLeave = doctor.emergencyLeave;
 			user.role = 'doctor';
 			return user;
 		} catch (e) {
@@ -41,7 +44,10 @@ export default class UserService {
 		user.testResult = patient.testResult;
 		user.dob = patient.dob;
 		user.gender = patient.gender;
+		user.flagged = patient.flagged;
 		user.role = 'patient';
+		user.reminded = patient.reminded;
+		user.lastUpdated = patient.lastUpdated;
 		return user;
 	}
 
@@ -57,24 +63,29 @@ export default class UserService {
 
 	async getPatient(userId: string): Promise<IPatient> {
 		const db: any = Container.get('mysql');
-		const sql = 'SELECT medicalId, testResult, dob, gender FROM Patient WHERE userId = ?';
+		const sql = 'SELECT medicalId, testResult, dob, gender, flagged, reminded, lastUpdated' +
+			' FROM Patient WHERE userId = ?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
 			throw new Error('User not found');
 		}
 		return {
 			medicalId: rows[0].medicalId, testResult: rows[0].testResult,
-			dob: rows[0].dob, gender: rows[0].gender
+			dob: rows[0].dob, gender: rows[0].gender,
+			flagged: rows[0].flagged, reminded: rows[0].reminded, lastUpdated: rows[0].lastUpdated
 		};
 	}
 
-	async getDoctor(userId: string): Promise<string> {
+	async getDoctor(userId: string): Promise<IDoctor> {
 		const db: any = Container.get('mysql');
-		const sql = 'SELECT licenseId FROM Doctor WHERE id = ?';
+		const sql = 'SELECT licenseId, emergencyLeave FROM Doctor WHERE id = ?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
 			throw new Error('User not found');
 		}
-		return rows[0].licenseId;
+		return {
+			licenseId: rows[0].licenseId,
+			emergencyLeave: rows[0].emergencyLeave
+		};
 	}
 }
