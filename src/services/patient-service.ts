@@ -274,7 +274,7 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'SELECT name, description, response, onDate ' +
-			'FROM Request, Symptoms WHERE medicalId = ? ' +
+			'FROM Request, Symptoms WHERE medicalId = ?AND response is not null ' +
 			'GROUP BY name, description ' +
 			'HAVING Max(onDate)';
 		const [rows] = await db.query(sql, medicalId);
