@@ -64,6 +64,11 @@ jobs:
         run: |
           bash ./build/git_update.sh -v ${{ steps.get_version.outputs.VERSION }}
 
+      - name: Create .env file
+        env:
+          DEV_ENV: ${{ secrets.DEV_ENV }}
+        run: echo $DEV_ENV | base64 --decode > .env
+
       - name: Build, Tag, and Push the Image to Amazon ECR
         id: build-image
         env:
