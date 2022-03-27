@@ -16,15 +16,18 @@ function startServer() {
 	const fs = require('fs');
 
 	const app = express();
-	const PORT = 8080;
 
 	const httpsCredentials = {
 		key: fs.readFileSync('./key.pem'),
 		cert: fs.readFileSync('./cert.pem')
 	};
 
-	http.createServer(app).listen(8443);
-	https.createServer(httpsCredentials, app).listen(8080);
+	http.createServer(app).listen(8080, () => {
+		console.log('Server is listening on port 8080 - http');
+	});
+	https.createServer(httpsCredentials, app).listen(8443, () => {
+		console.log('Server is listening on port 8443 - https');
+	});
 
 	dotenv.config({path: process.env.CONFIG_PATH});
 
@@ -35,10 +38,6 @@ function startServer() {
 
 	app.get('/', (req, res) => {
 		res.send('Welcome to the COVID-19 Tracker App Server');
-	});
-
-	app.listen(PORT, () => {
-		console.log(`Server is listening on port ${PORT}`);
 	});
 
 	app.use(config.api.prefix + config.api.version, routes());
