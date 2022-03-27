@@ -10,8 +10,21 @@ import bodyParser from 'body-parser';
 const admin = require('firebase-admin');
 
 function startServer() {
+
+	const http = require('http');
+	const https = require('https');
+	const fs = require('fs');
+
 	const app = express();
 	const PORT = 8080;
+
+	const httpsCredentials = {
+		key: fs.readFileSync('./key.pem'),
+		cert: fs.readFileSync('./cert.pem')
+	};
+
+	http.createServer(app).listen(8443);
+	https.createServer(httpsCredentials, app).listen(8080);
 
 	dotenv.config({path: process.env.CONFIG_PATH});
 
