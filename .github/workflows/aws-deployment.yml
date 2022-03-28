@@ -62,7 +62,7 @@ jobs:
       - name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
-          bash ./build/git_update.sh -v ${{ steps.get_version.outputs.VERSION }}
+          bash ./.github/git_update.sh -v ${{ steps.get_version.outputs.VERSION }}
 
       - name: Create .env file
         env:
@@ -93,7 +93,7 @@ jobs:
       - name: Git - Get Latest Tag
         id: git-get-tag
         run: |
-          bash ./build/git_get_tag.sh
+          bash ./.github/git_get_tag.sh
 
       - name: Deployment - Executing EC2 SSH Commands
         uses: appleboy/ssh-action@master
