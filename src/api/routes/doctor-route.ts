@@ -21,7 +21,7 @@ export default (app: Router) => {
 	app.use('/doctors', route);
 
 	route.get('/all', middleware.authenticateJWT, async (req, res, next) => {
-		console.debug('Calling get all..');
+		console.debug('Calling get all doctors..');
 		const userId = getUserAuth(req.headers).user_id;
 		const doctorServiceInstance = Container.get(DoctorService);
 		doctorServiceInstance.getAllDoctors(userId).then((doctor) => {

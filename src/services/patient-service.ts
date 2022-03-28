@@ -1,11 +1,16 @@
 import { Container, Service } from 'typedi';
-import { IPatient, IPatientData, IPatientReturnData, IReportPatient, UserType } from '../interfaces/IPatient';
+import {
+	IPatient,
+	IPatientData,
+	IPatientReturnData,
+	IReportPatient,
+	UserType,
+} from '../interfaces/IPatient';
 import { IUser } from '../interfaces/IUser';
 import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
 
 @Service()
 export default class PatientService {
-
 	constructor() {
 		//
 	}
@@ -16,7 +21,14 @@ export default class PatientService {
 		const user: IUser = this.getUserFromData(userInfo);
 		const patient: IPatient = this.getPatientFromData(userInfo);
 
-		await db.query(sql, [userId, user.firstName, user.lastName, user.phoneNumber, user.address, user.email]);
+		await db.query(sql, [
+			userId,
+			user.firstName,
+			user.lastName,
+			user.phoneNumber,
+			user.address,
+			user.email,
+		]);
 		await this.createPatient(userId, patient);
 	}
 
@@ -27,12 +39,14 @@ export default class PatientService {
 			patient.gender, patient.flagged, patient.reviewed, patient.reminded]);
 	}
 
-
 	getUserFromData(userInfo: IPatientData): IUser {
 		return {
-			id: '', firstName: userInfo.firstName,
-			lastName: userInfo.lastName, phoneNumber: userInfo.phoneNumber,
-			address: userInfo.address, email: userInfo.email
+			id: '',
+			firstName: userInfo.firstName,
+			lastName: userInfo.lastName,
+			phoneNumber: userInfo.phoneNumber,
+			address: userInfo.address,
+			email: userInfo.email,
 		};
 	}
 
@@ -44,11 +58,14 @@ export default class PatientService {
 			gender: userInfo.gender,
 			flagged: false,
 			reviewed: false,
-			reminded: false,
+			reminded: false
 		};
 	}
 
-	async getPatientWithId(userId: string, medicalId: string): Promise<IPatientReturnData> {
+	async getPatientWithId(
+		userId: string,
+		medicalId: string
+	): Promise<IPatientReturnData> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = `SELECT medicalId,
@@ -56,7 +73,7 @@ export default class PatientService {
 							patientUser.lastName,
 							testResult,
 							IF(Patient.doctorId IS NOT NULL,
-							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
+							   CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL) as doctorName,
 							patientUser.phoneNumber,
 							patientUser.address,
 							patientUser.email,
@@ -68,7 +85,6 @@ export default class PatientService {
 								WHEN medicalId IN
 									 (SELECT medicalId From Flagged_Auth WHERE medicalId = ? AND authId = ?) THEN 1
 								ELSE 0 END                                         as flagged
-
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -125,7 +141,7 @@ export default class PatientService {
 			lastName: rows[0].lastName,
 		};
 	}
-
+  
 	public async getAllPatients(userId: string): Promise<IPatientReturnData[]> {
 		const patientsArray: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
@@ -135,7 +151,8 @@ export default class PatientService {
 									 patientUser.lastName,
 									 testResult,
 									 IF(Patient.doctorId IS NOT NULL,
-										CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL)             as doctorName,
+										CONCAT(doctorUser.firstName, ' ', doctorUser.lastName), NULL) as doctorName,
+									 Patient.doctorId,
 									 patientUser.phoneNumber,
 									 patientUser.address,
 									 patientUser.email,
@@ -144,8 +161,7 @@ export default class PatientService {
 									 reminded,
 									 lastUpdated,
 									 IF(medicalId IN (SELECT medicalId From Flagged_Auth WHERE authId = ?), 1,
-										0) as flagged
-
+										0)                                                            as flagged
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -157,13 +173,17 @@ export default class PatientService {
 		if (results.length === 0) {
 			throw new Error('Zero Patients exist');
 		}
-		results[0].forEach(patient => {
+		results[0].forEach((patient) => {
 			patientsArray.push(patient);
 		});
 		return patientsArray;
 	}
 
-	async updateTestResult(userId: any, medicalId: string, testResult: string): Promise<void> {
+	async updateTestResult(
+		userId: any,
+		medicalId: string,
+		testResult: string
+	): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'UPDATE Patient SET testResult = ?, lastUpdated = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
@@ -171,12 +191,20 @@ export default class PatientService {
 		await db.query(sql, [testResult, medicalId]);
 	}
 
-	async flagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+	async flagPatient(
+		userId: string,
+		medicalId: string,
+		role: UserType
+	): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		if (role === UserType.HEALTH_OFFICIAL || role === UserType.IMMIGRATION_OFFICER || role == UserType.ADMIN) {
+		if (
+			role == UserType.HEALTH_OFFICIAL ||
+			role == UserType.IMMIGRATION_OFFICER ||
+			role == UserType.ADMIN
+		) {
 			sql = 'INSERT INTO Flagged_Auth VALUES (?,?)';
 			await db.query(sql, [medicalId, userId]);
 			return;
@@ -194,12 +222,20 @@ export default class PatientService {
 		}
 	}
 
-	async unFlagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
+	async unFlagPatient(
+		userId: string,
+		medicalId: string,
+		role: UserType
+	): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
 		let sql = '';
-		if (role == UserType.ADMIN || role == UserType.IMMIGRATION_OFFICER || role == UserType.HEALTH_OFFICIAL) {
+		if (
+			role == UserType.ADMIN ||
+			role == UserType.IMMIGRATION_OFFICER ||
+			role == UserType.HEALTH_OFFICIAL
+		) {
 			sql = 'DELETE FROM Flagged_Auth WHERE medicalId =? AND authId =?';
 			await db.query(sql, [medicalId, userId]);
 			return;
@@ -232,25 +268,30 @@ export default class PatientService {
 		return;
 	}
 
-
 	async reportInContactWith(userId: string, reporterMedicalId: string, people: IReportPatient[]) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const person of people) {
-			let sql = 'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?';
+			let sql =
+				'SELECT medicalId From Patient, User WHERE Patient.userId = User.id AND phoneNumber = ? AND email = ?';
 			const [rows] = await db.query(sql, [person.phoneNumber, person.email]);
 			if (rows.length == 0) {
 				throw new Error('Reportee is not a user');
 			}
-			sql = 'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
+			sql =
+				'INSERT INTO InContact VALUES (?,?, CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\'))';
 			await db.query(sql, [reporterMedicalId, rows[0].medicalId]);
 		}
 	}
 
-	async getMyRequestedSymptoms(userId: string, medicalId: string): Promise<ISymptom[]> {
+	async getMyRequestedSymptoms(
+		userId: string,
+		medicalId: string
+	): Promise<ISymptom[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT name, description FROM Request, Symptoms ' +
+		const sql =
+			'SELECT name, description FROM Request, Symptoms ' +
 			'WHERE medicalId = ? AND symptom = Symptoms.name AND response is null';
 		const [rows] = await db.query(sql, medicalId);
 		if (rows.length == 0) {
@@ -259,11 +300,16 @@ export default class PatientService {
 		return rows;
 	}
 
-	async submitSymptomsResponse(userId: string, medicalId: string, responseList: ISymptom[]) {
+	async submitSymptomsResponse(
+		userId: string,
+		medicalId: string,
+		responseList: ISymptom[]
+	) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
-			const sql = 'UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
+			const sql =
+				'UPDATE Request SET response = ?, onDate = CONVERT_TZ(NOW(), \'UTC\', \'America/New_York\')' +
 				' WHERE medicalId = ? ' +
 				'AND symptom = ? AND onDate is null AND response is null';
 			await db.query(sql, [symptom.isChecked, medicalId, symptom.name]);
@@ -297,7 +343,9 @@ export default class PatientService {
 		const db: any = Container.get('mysql');
 		let sql = '';
 		switch (role) {
-			case UserType.ADMIN || UserType.IMMIGRATION_OFFICER || UserType.HEALTH_OFFICIAL: {
+			case UserType.ADMIN ||
+			UserType.IMMIGRATION_OFFICER ||
+			UserType.HEALTH_OFFICIAL: {
 				sql = 'SELECT * FROM Authority WHERE id=?';
 				const [rows1] = await db.query(sql, userId);
 				if (rows1.length === 0) {
@@ -321,13 +369,12 @@ export default class PatientService {
 
 	async verifyAssignee(userId: string, medicalId: string): Promise<void> {
 		const db: any = Container.get('mysql');
-		const sql = 'SELECT licenseId FROM Patient, Doctor WHERE Patient.doctorId = licenseId AND Doctor.id = ? AND Patient.medicalId = ?';
+		const sql =
+			'SELECT licenseId FROM Patient, Doctor WHERE Patient.doctorId = licenseId AND Doctor.id = ? AND Patient.medicalId = ?';
 		const [rows] = await db.query(sql, [userId, medicalId]);
 		if (rows.length === 0) {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
-
-
-
+  
 }
