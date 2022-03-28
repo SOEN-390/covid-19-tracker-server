@@ -18,8 +18,8 @@ function startServer() {
 	const app = express();
 
 	const httpsCredentials = {
-		key: fs.readFileSync('./key.pem'),
-		cert: fs.readFileSync('./cert.pem')
+		key: fs.readFileSync('./https-certificate/key.pem'),
+		cert: fs.readFileSync('./https-certificate/cert.pem')
 	};
 
 	http.createServer(app).listen(8080, () => {
@@ -38,6 +38,11 @@ function startServer() {
 
 	app.get('/', (req, res) => {
 		res.send('Welcome to the COVID-19 Tracker App Server');
+	});
+
+	app.get('/.well-known/pki-validation/91AA05CD71D8C57AA4AA0D8019D50646.txt', (req, res) => {
+		res.download('./https-certificate/91AA05CD71D8C57AA4AA0D8019D50646.txt');
+		res.status(200);
 	});
 
 	app.use(config.api.prefix + config.api.version, routes());

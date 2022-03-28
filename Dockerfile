@@ -20,8 +20,7 @@ COPY tests tests
 COPY tsconfig.json ./
 COPY jest.unit.json ./
 COPY .eslintrc.json ./
-COPY key.pem ./
-COPY cert.pem ./
+COPY https-certificate https-certificate
 
 # compile ts to js
 RUN tsc --skipLibCheck
