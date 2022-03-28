@@ -11,7 +11,7 @@
     "test": "jest -c ./jest.unit.json",
     "test:coverage": "jest --coverage -c ./jest.unit.json",
     "start": "node ./build/server.js",
-    "style:eslint": "eslint **/src/**/*"
+    "style:eslint": "eslint ./src/**/*"
   },
   "repository": {
     "type": "git",

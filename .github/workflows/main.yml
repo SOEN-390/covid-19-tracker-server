@@ -1,9 +1,6 @@
 name:  CI - PR/Merge to Master
 
 on:
-  push:
-    branches:
-    - master
   pull_request:
     branches:
     - master
