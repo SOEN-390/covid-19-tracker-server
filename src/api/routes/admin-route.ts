@@ -78,7 +78,7 @@ export default (app: Router) => {
 		try {
 			const userId = getUserAuth(req.headers).user_id;
 			const adminServiceInstance = Container.get(AdminService);
-			await adminServiceInstance.addNewSymptom(userId, req.body.symptom as ISymptom)
+			await adminServiceInstance.addNewSymptom(userId, req.body.symptom as ISymptom);
 			return res.status(200).end();
 		} catch (error) {
 			return next(error);
