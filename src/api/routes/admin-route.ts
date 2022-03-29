@@ -66,24 +66,24 @@ export default (app: Router) => {
 	);
 
 	route.post('/symptom', middleware.authenticateJWT, celebrate({
-			body: Joi.object({
-				symptom: Joi.object({
-					name: Joi.string().required(),
-					description: Joi.string().required(),
-				})
-			}),
+		body: Joi.object({
+			symptom: Joi.object({
+				name: Joi.string().required(),
+				description: Joi.string().required(),
+			})
 		}),
-		async (req, res, next) => {
-			console.debug('Calling add symptom as admin..');
-			try {
-				const userId = getUserAuth(req.headers).user_id;
-				const adminServiceInstance = Container.get(AdminService);
-				await adminServiceInstance.addNewSymptom(userId, req.body.symptom as ISymptom)
-				return res.status(200).end();
-			} catch (error) {
-				return next(error);
-			}
+	}),
+	async (req, res, next) => {
+		console.debug('Calling add symptom as admin..');
+		try {
+			const userId = getUserAuth(req.headers).user_id;
+			const adminServiceInstance = Container.get(AdminService);
+			await adminServiceInstance.addNewSymptom(userId, req.body.symptom as ISymptom)
+			return res.status(200).end();
+		} catch (error) {
+			return next(error);
 		}
+	}
 	);
 
 };
