@@ -4,6 +4,8 @@ import DoctorService from '../../services/doctor-service';
 import { Container } from 'typedi';
 import middleware from '../middleware';
 import { getUserAuth } from '../middleware/userAuthData';
+import PatientService from '../../services/patient-service';
+import { IAppointment } from '../../interfaces/IAppointment';
 
 const route = Router();
 
@@ -194,6 +196,33 @@ export default (app: Router) => {
 			}).catch((error) => {
 				return next(error);
 			});
+		}
+	);
+
+	route.post('/:licenseId/patients/:medicalId/appointment', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				medicalId: Joi.string().required(),
+				licenseId: Joi.string().required()
+			}),
+			body: Joi.object({
+				appointment: Joi.object({
+					date: Joi.string().required(),
+					subject: Joi.string().required()
+				})
+			})
+		}), async (req, res, next) => {
+			console.debug('Calling book appointment..');
+			try {
+				const userId = getUserAuth(req.headers).user_id;
+				const doctorServiceInstance = Container.get(DoctorService);
+				await doctorServiceInstance.bookAppointment(userId, req.params.licenseId,
+					req.params.medicalId, req.body.appointment as IAppointment);
+				return res.status(200).end();
+			}
+			catch (error) {
+				return next(error);
+			}
 		}
 	);
 
