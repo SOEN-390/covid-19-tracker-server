@@ -2,6 +2,7 @@ import { Container, Service } from 'typedi';
 import { IDoctorReturnData } from '../interfaces/IDoctor';
 import { IContact, IPatientReturnData } from '../interfaces/IPatient';
 import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
+import { IAppointment } from '../interfaces/IAppointment';
 
 @Service()
 export default class DoctorService {
@@ -175,6 +176,47 @@ export default class DoctorService {
 		return rows;
 	}
 
+
+	async reviewPatient(userId: string, medicalId: string,): Promise<void> {
+		const db: any = Container.get('mysql');
+		const sql = 'UPDATE Patient SET reviewed = true WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
+
+	async unReviewPatient(userId: string, medicalId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+		const sql = 'UPDATE Patient SET reviewed = false WHERE medicalId = ?';
+		await db.query(sql, [medicalId]);
+		return;
+	}
+
+	async declareEmergencyLeave(userId: string, licenseId: string): Promise<void> {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'UPDATE Doctor SET emergencyLeave = true WHERE licenseId = ?';
+		await db.query(sql, [licenseId]);
+		return;
+	}
+
+	async bookAppointment(userId: string, licenseId: string, medicalId: string, appointment: IAppointment) {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		await this.verifyAppointment(licenseId, medicalId);
+		const date = new Date(appointment.date);
+		const sql = 'INSERT INTO Appointment VALUES (?, ?, ?, ?)';
+		await db.query(sql, [medicalId, licenseId, date, appointment.subject]);
+	}
+
+	async verifyAppointment(licenseId: string, medicalId: string) {
+		const db: any = Container.get('mysql');
+		const sql = 'SELECT * FROM Appointment WHERE licenseId = ? AND medicalId = ? AND appointmentDate > NOW()';
+		const [rows] = await db.query(sql, [licenseId, medicalId]);
+		if (rows.length > 0) {
+			throw new Error('Already have an upcoming appointment');
+		}
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -183,32 +225,5 @@ export default class DoctorService {
 		if (rows.length === 0) {
 			throw new Error('User does not exist');
 		}
-	}
-
-	async reviewPatient(userId: string, medicalId: string,): Promise<void> {
-		const db: any = Container.get('mysql');
-		let sql = '';
-		sql = 'UPDATE Patient SET reviewed = true WHERE medicalId = ?';
-		await db.query(sql, [medicalId]);
-		return;
-	}
-
-	async unReviewPatient(userId: string, medicalId: string): Promise<void> {
-		const db: any = Container.get('mysql');
-		let sql = '';
-		sql = 'UPDATE Patient SET reviewed = false WHERE medicalId = ?';
-		await db.query(sql, [medicalId]);
-		return;
-	}
-
-	async declareEmergencyLeave(userId: string, licenseId: string): Promise<void> {
-		const db: any = Container.get('mysql');
-
-		await this.verifyUser(userId);
-
-		let sql = '';
-		sql = 'UPDATE Doctor SET emergencyLeave = true WHERE licenseId = ?';
-		await db.query(sql, [licenseId]);
-		return;
 	}
 }
