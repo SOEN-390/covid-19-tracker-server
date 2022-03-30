@@ -1,0 +1,30 @@
+name:  PR Workflow
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Create .env file
+    - name: Create .env file
+      env:
+        DEV_ENV: ${{ secrets.DEV_ENV }}
+      run: echo $DEV_ENV | base64 --decode > .env
+
+    - name: Build and Run the Docker Containers
+      run: docker-compose up --build -d
+
+    - name: Run ESLint
+      run: docker exec -e CI=true covid-19-tracker-server npm run style:eslint
+
+    - name: Run Tests
+      run: docker exec covid-19-tracker-server npm run test --verbose
