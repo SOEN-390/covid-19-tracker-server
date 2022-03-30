@@ -217,6 +217,13 @@ export default class DoctorService {
 		}
 	}
 
+	async getUpcomingAppointments(userId: string, licenseId: string) {
+		const db: any = Container.get('mysql');
+		await this.verifyUser(userId);
+		const sql = 'SELECT * FROM Appointment WHERE licenseId = ? AND appointmentDate > NOW()';
+		
+	}
+
 	// To be used for almost all functions to verify the requester user exists in our db
 	async verifyUser(userId: string): Promise<void> {
 		const db: any = Container.get('mysql');
@@ -226,4 +233,6 @@ export default class DoctorService {
 			throw new Error('User does not exist');
 		}
 	}
+
+
 }
