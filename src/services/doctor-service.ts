@@ -204,7 +204,7 @@ export default class DoctorService {
 		await this.verifyUser(userId);
 		await this.verifyAppointment(licenseId, medicalId);
 		const date = new Date(appointment.date);
-		const sql = `INSERT INTO Appointment VALUES (?, ?, ?, ?)`;
+		const sql = 'INSERT INTO Appointment VALUES (?, ?, ?, ?)';
 		await db.query(sql, [medicalId, licenseId, date, appointment.subject]);
 	}
 
