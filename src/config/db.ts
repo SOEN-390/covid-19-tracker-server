@@ -4,8 +4,6 @@ export default () => {
 
 	const mysql = require('promise-mysql2');
 
-	console.log(process.env);
-
 	const pool = mysql.createPool({
 		host: process.env.RDS_HOSTNAME,
 		user: process.env.RDS_USERNAME,
