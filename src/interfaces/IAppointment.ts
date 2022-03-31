@@ -4,5 +4,7 @@ export interface IAppointment {
 }
 
 export interface IAppointmentReturnData {
-
+	patientName: string;
+	appointmentSubject: string;
+	appointmentDate : Date;
 }

@@ -2,7 +2,7 @@ import { Container, Service } from 'typedi';
 import { IDoctorReturnData } from '../interfaces/IDoctor';
 import { IContact, IPatientReturnData } from '../interfaces/IPatient';
 import { ISymptom, ISymptomResponse } from '../interfaces/ISymptom';
-import { IAppointment } from '../interfaces/IAppointment';
+import { IAppointment, IAppointmentReturnData } from '../interfaces/IAppointment';
 
 @Service()
 export default class DoctorService {
@@ -217,11 +217,18 @@ export default class DoctorService {
 		}
 	}
 
-	async getUpcomingAppointments(userId: string, licenseId: string) {
+	async getUpcomingAppointments(userId: string, licenseId: string): Promise<IAppointmentReturnData[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
-		const sql = 'SELECT * FROM Appointment WHERE licenseId = ? AND appointmentDate > NOW()';
-		
+		const sql = `SELECT CONCAT(firstName, ' ', lastName) as patientName, appointmentSubject, appointmentDate
+						FROM User, Patient, Appointment WHERE Appointment.licenseId = ? AND Appointment.medicalId = Patient.medicalId
+						AND Patient.userId = User.id AND appointmentDate > CONVERT_TZ(NOW(), 'UTC', 'America/New_York')
+						ORDER BY appointmentDate asc`;
+		const [rows] = await db.query(sql, licenseId);
+		if (rows.length === 0) {
+			throw new Error('No upcoming appointments');
+		}
+		return rows;
 	}
 
 	// To be used for almost all functions to verify the requester user exists in our db
