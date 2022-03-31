@@ -21,6 +21,7 @@ COPY tsconfig.json ./
 COPY jest.unit.json ./
 COPY .eslintrc.json ./
 COPY https-certificate https-certificate
+COPY .github .github
 
 # compile ts to js
 RUN tsc --skipLibCheck
