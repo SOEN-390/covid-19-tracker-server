@@ -13,6 +13,7 @@ export default class UserService {
 	async getUser(userId: string): Promise<IUserReturnData> {
 		const user = {} as IUserReturnData;
 		const db: any = Container.get('mysql');
+		console.log('helo: ', db);
 		const sql = 'SELECT * FROM User WHERE id=?';
 		const [rows] = await db.query(sql, userId);
 		if (rows.length === 0) {
