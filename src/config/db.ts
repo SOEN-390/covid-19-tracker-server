@@ -23,7 +23,6 @@ export default () => {
 		port: process.env.RDS_PORT,
 		database: 'covid-tracker'
 	});
-
-	console.log(pool.database, pool.getConnection());
+	
 	Container.set('mysql', pool);
 };
