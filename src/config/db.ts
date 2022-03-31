@@ -12,5 +12,6 @@ export default () => {
 		database: 'covid-tracker'
 	});
 
+	console.log(pool.database, pool.getConnection());
 	Container.set('mysql', pool);
 };
