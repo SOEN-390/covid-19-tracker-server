@@ -5,6 +5,7 @@ export default () => {
 	const mysql = require('promise-mysql2');
 
 	console.log('env');
+	
 	console.log(process.env);
 
 	console.log('database config:');
