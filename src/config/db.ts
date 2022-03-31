@@ -11,5 +11,6 @@ export default () => {
 		port: process.env.RDS_PORT,
 		database: 'covid-tracker'
 	});
+	
 	Container.set('mysql', pool);
 };
