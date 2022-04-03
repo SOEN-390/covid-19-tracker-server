@@ -100,10 +100,10 @@ export default (app: Router) => {
 			const doctorServiceInstance = Container.get(DoctorService);
 			doctorServiceInstance.getPatientSymptomsHistory(userId, req.params.licenseId as string,
 				req.params.medicalId as string).then((symptomsResponse) => {
-					return res.json(symptomsResponse);
-				}).catch((error) => {
-					return next(error);
-				});
+				return res.json(symptomsResponse);
+			}).catch((error) => {
+				return next(error);
+			});
 		}
 	);
 

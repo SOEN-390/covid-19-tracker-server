@@ -12,5 +12,5 @@ export default () => {
 	});
 
 
-	Container.set('mailerService', transport)
+	Container.set('mailerService', transport);
 };
