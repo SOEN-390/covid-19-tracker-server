@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
 import Container from 'typedi';
 export default () => {
 
@@ -12,5 +12,5 @@ export default () => {
 	});
 
 
-	Container.set('nodemailer', transport)
+	Container.set('mailerService', transport)
 };
