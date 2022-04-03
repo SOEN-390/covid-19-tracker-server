@@ -199,13 +199,11 @@ export default (app: Router) => {
 		}
 	);
 
-	route.post('/:licenseId/patients/:medicalId/:email/appointment', middleware.authenticateJWT,
+	route.post('/:licenseId/patients/:medicalId/appointment', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
 				medicalId: Joi.string().required(),
-				licenseId: Joi.string().required(),
-				email: Joi.string().required()
-
+				licenseId: Joi.string().required()
 			}),
 			body: Joi.object({
 				appointment: Joi.object({
@@ -218,19 +216,8 @@ export default (app: Router) => {
 			try {
 				const userId = getUserAuth(req.headers).user_id;
 				const doctorServiceInstance = Container.get(DoctorService);
-				const mailerService: any = Container.get('nodemailer');
 				await doctorServiceInstance.bookAppointment(userId, req.params.licenseId,
 					req.params.medicalId, req.body.appointment as IAppointment);
-				mailerService.sendMail({
-					from: 'notifications@cvoid-19-app.web.app',
-					to: `${req.params.email}`,
-					subject: "Appoinment has been set with your Doctor",
-					html: `
-							<p>Please login to covid-19 tracker app to see your appoinment </p>
-							
-						`
-				})
-
 				return res.status(200).end();
 			}
 			catch (error) {
