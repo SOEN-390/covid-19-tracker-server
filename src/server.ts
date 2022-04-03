@@ -6,7 +6,7 @@ import routes from './api/routes';
 import db from './config/db';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import email from './config/emailer';
+import mailer from './config/mailer';
 const admin = require('firebase-admin');
 
 function startServer() {
@@ -48,7 +48,7 @@ function startServer() {
 	app.use(config.api.prefix + config.api.version, routes());
 
 	db();
-	email();
+	mailer();
 
 	admin.initializeApp({
 		credential: admin.credential.cert({
