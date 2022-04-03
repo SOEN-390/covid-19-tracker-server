@@ -59,7 +59,8 @@ export default class DoctorService {
 							gender,
 							flagged,
 							reviewed,
-							reminded
+							reminded,
+							lastUpdated
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
