@@ -226,6 +226,24 @@ export default (app: Router) => {
 		}
 	);
 
+	route.get('/:licenseId/upcoming-appointments', middleware.authenticateJWT,
+		celebrate({
+			params: Joi.object({
+				licenseId: Joi.string().required()
+			})
+		}),
+		async (req, res, next) => {
+			console.debug('Calling get upcoming appointments for doctor..');
+			const userId = getUserAuth(req.headers).user_id;
+			const doctorServiceInstance = Container.get(DoctorService);
+			doctorServiceInstance.getUpcomingAppointments(userId, req.params.licenseId).then((appointments) => {
+				return res.json(appointments);
+			}).catch((error) => {
+				return next(error);
+			});
+		}
+	);
+
 };
 
 
