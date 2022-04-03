@@ -12,5 +12,5 @@ export default () => {
 	});
 
 
-	Container.set('patientEmail', transport)
+	Container.set('nodemailer', transport)
 };

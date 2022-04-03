@@ -218,10 +218,10 @@ export default (app: Router) => {
 			try {
 				const userId = getUserAuth(req.headers).user_id;
 				const doctorServiceInstance = Container.get(DoctorService);
-				const emailPatient: any = Container.get('patientEmail');
+				const mailerService: any = Container.get('nodemailer');
 				await doctorServiceInstance.bookAppointment(userId, req.params.licenseId,
 					req.params.medicalId, req.body.appointment as IAppointment);
-				emailPatient.sendMail({
+				mailerService.sendMail({
 					from: 'notifications@cvoid-19-app.web.app',
 					to: `${req.params.email}`,
 					subject: "Appoinment has been set with your Doctor",
