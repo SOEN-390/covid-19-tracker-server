@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import Container from 'typedi';
 export default () => {
 
 	const transport = nodemailer.createTransport({
@@ -10,12 +11,5 @@ export default () => {
 		}
 	})
 
-
-	transport.sendMail({
-		from: 'quaranteam.soen390@gmail.com',
-		to: 'beshoysoliman11@gmail.com',
-		subject: 'Appointment has been set with your Doctor',
-		html: `<p> Please login covid-19 tracker app and check appoiment set with your docter </p>
-			`
-	})
+	Container.set('patientEmail', transport)
 };

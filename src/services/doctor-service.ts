@@ -201,12 +201,23 @@ export default class DoctorService {
 
 	async bookAppointment(userId: string, licenseId: string, medicalId: string, appointment: IAppointment) {
 		const db: any = Container.get('mysql');
+		const emailPatient: any = Container.get('patientEmail');
 		await this.verifyUser(userId);
 		await this.verifyAppointment(licenseId, medicalId);
 		const date = new Date(appointment.date);
 		const sql = 'INSERT INTO Appointment VALUES (?, ?, ?, ?)';
 		await db.query(sql, [medicalId, licenseId, date, appointment.subject]);
+		emailPatient.sendMail({
+			from: 'test@test.com',
+			to: "test@test.com",
+			subject: "Appoinment has been set with your Doctor",
+			html: `
+			<p>Please login to covid-19 tracker app to see your appoinment </p>
+		`
+
+		})
 	}
+
 
 	async verifyAppointment(licenseId: string, medicalId: string) {
 		const db: any = Container.get('mysql');

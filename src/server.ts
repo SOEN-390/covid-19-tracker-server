@@ -48,7 +48,7 @@ function startServer() {
 	app.use(config.api.prefix + config.api.version, routes());
 
 	db();
-	//email(); //this will send email 
+	email();
 
 	admin.initializeApp({
 		credential: admin.credential.cert({
