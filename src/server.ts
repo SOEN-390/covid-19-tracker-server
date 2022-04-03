@@ -6,7 +6,7 @@ import routes from './api/routes';
 import db from './config/db';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import email from './config/email';
+import email from './config/emailer';
 const admin = require('firebase-admin');
 
 function startServer() {
