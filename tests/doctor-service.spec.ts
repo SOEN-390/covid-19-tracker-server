@@ -1,7 +1,7 @@
 import DoctorService from '../src/services/doctor-service';
 import { Container } from 'typedi';
 import { gender, IPatientReturnData, testResult } from '../src/interfaces/IPatient';
-import { ISymptom } from '../src/interfaces/ISymptom';
+import { ISymptom, ISymptomResponse } from '../src/interfaces/ISymptom';
 
 describe('Doctor service unit-test', () => {
 
@@ -9,6 +9,7 @@ describe('Doctor service unit-test', () => {
 	let testDoctorData;
 	let testPatientData: IPatientReturnData;
 	let testSymptom: ISymptom;
+	let testSymptomsResponse: ISymptomResponse;
 	let doctorService: DoctorService;
 	let mysql;
 
@@ -46,6 +47,13 @@ describe('Doctor service unit-test', () => {
 		testSymptom = {
 			name: 'fever',
 			description: 'heloo'
+		}
+
+		testSymptomsResponse = {
+			name: 'fever',
+			description: 'heloo',
+			response: false,
+			onDate: new Date()
 		}
 
 		doctorService = new DoctorService();
@@ -160,6 +168,29 @@ describe('Doctor service unit-test', () => {
 		});
 	});
 
+
+	describe('Get Patients Symptoms History', () => {
+
+		beforeEach(() => {
+
+			let rows = [testSymptomsResponse];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('get patients symptoms history', async () => {
+			const symptomResponses = await doctorService.getPatientSymptomsHistory(userId,
+				testDoctorData.licenseId, testPatientData.medicalId);
+			expect(symptomResponses).toEqual([testSymptomsResponse])
+		});
+	});
+
 	describe('Check Pending Requests', () => {
 
 		beforeEach(() => {
@@ -229,5 +260,130 @@ describe('Doctor service unit-test', () => {
 			}
 		});
 	});
+
+	describe('Declare Emergency Leave', () => {
+
+		beforeEach(() => {
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([testPatientData])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('declare emergency leave', async () => {
+			try {
+				await doctorService.declareEmergencyLeave(userId, testDoctorData.licenseId);
+			}
+			catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+	});
+
+	describe('Book an appointment with Patient', () => {
+
+		beforeEach(() => {
+			jest.spyOn(doctorService, 'verifyAppointment').mockImplementation(async ()=> {
+				return;
+			});
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([testPatientData])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('book an appointment', async () => {
+			try {
+				await doctorService.bookAppointment(userId, testDoctorData.licenseId,
+					testPatientData.medicalId, {date: '', subject: 'test'})
+			}
+			catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+	});
+
+	describe('Verify Appointment', () => {
+
+		beforeEach(() => {
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([[]])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('verify appointment', async () => {
+			try {
+				await doctorService.verifyAppointment(testDoctorData.licenseId, testPatientData.medicalId);
+			}
+			catch (e) {
+				expect(e).toEqual(new Error('No upcoming appointments'));
+			}
+		});
+	});
+
+	describe('Get upcoming Appointments for Doctor', () => {
+
+		beforeEach(() => {
+			jest.spyOn(doctorService, 'verifyUser').mockImplementation(async ()=> {
+				return;
+			});
+
+			let rows = [{date: '1995-01-01', subject: 'test'}];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('get upcoming appointments', async () => {
+			const appointments = await doctorService.getUpcomingAppointments(userId, testDoctorData.licenseId);
+			expect(appointments).toEqual([{date: '1995-01-01', subject: 'test'}]);
+		});
+	});
+
+	describe('Verify User', () => {
+
+		beforeEach(() => {
+
+			let rows = [testDoctorData];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('verify user', async () => {
+			try {
+				await doctorService.verifyUser(userId)
+			}
+			catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+
+	});
+
+
 
 });

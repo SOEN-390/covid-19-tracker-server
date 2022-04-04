@@ -6,6 +6,7 @@ describe('Patient service unit-test', () => {
 
 	let userId;
 	let testPatientData;
+	let testSymptomsResponse;
 
 	let patientService: PatientService;
 	let mysql;
@@ -25,6 +26,14 @@ describe('Patient service unit-test', () => {
 			phoneNumber: '514-555-5555',
 			testResult: testResult.POSITIVE
 		};
+
+		testSymptomsResponse = {
+			name: 'fever',
+			description: 'heloo',
+			response: false,
+			onDate: new Date()
+		}
+
 
 		patientService = new PatientService();
 
@@ -126,6 +135,26 @@ describe('Patient service unit-test', () => {
 		test('get all patients', async () => {
 			const patients = await patientService.getAllPatients(userId);
 			expect(patients).toEqual([testPatientData, testPatientData]);
+
+		});
+	});
+
+	describe('Get Doctor of Patient', () => {
+
+		beforeEach(() => {
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([[{id: '12', firstName: 'demo', lastName: 'doctor'}]])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('get patients Doctor', async () => {
+			const doctor = await patientService.getPatientDoctor(userId, testPatientData.medicalId);
+			expect(doctor).toEqual({id: '12', firstName: 'demo', lastName: 'doctor'});
 
 		});
 	});
@@ -318,6 +347,73 @@ describe('Patient service unit-test', () => {
 		});
 	});
 
+	describe('Remind Patient', () => {
 
+		beforeEach(() => {
+
+			rows = [testPatientData];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('remind patient', async () => {
+			try {
+				await patientService.remindPatient(userId, testPatientData.medicalId);
+			} catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+	});
+
+	describe('Un-Remind Patient', () => {
+
+		beforeEach(() => {
+
+			rows = [testPatientData];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('unRemind patient', async () => {
+			try {
+				await patientService.unRemindPatient(userId, testPatientData.medicalId);
+			} catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+	});
+
+	describe('Get Latest Symptoms', () => {
+
+		beforeEach(() => {
+
+			rows = [testSymptomsResponse];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('get latest symptoms', async () => {
+			const symptoms = await patientService.getLatestSymptoms(userId, testPatientData.medicalId);
+			expect(symptoms).toEqual([testSymptomsResponse]);
+		});
+	});
 
 });
