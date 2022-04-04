@@ -23,7 +23,8 @@ export default class ImmigrationService {
 							patientUser.email,
 							dob,
        						true as flagged,
-							gender
+							gender,
+							lastUpdated
 					 FROM Patient
 							  INNER JOIN User patientUser on Patient.userId = patientUser.id
 							  INNER JOIN Flagged_Auth on Patient.medicalId = Flagged_Auth.medicalId

@@ -99,7 +99,7 @@ export default (app: Router) => {
 			const userId = getUserAuth(req.headers).user_id;
 			const doctorServiceInstance = Container.get(DoctorService);
 			doctorServiceInstance.getPatientSymptomsHistory(userId, req.params.licenseId as string,
-			req.params.medicalId as string).then((symptomsResponse) => {
+				req.params.medicalId as string).then((symptomsResponse) => {
 				return res.json(symptomsResponse);
 			}).catch((error) => {
 				return next(error);

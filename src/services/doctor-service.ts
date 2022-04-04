@@ -59,7 +59,8 @@ export default class DoctorService {
 							gender,
 							flagged,
 							reviewed,
-							reminded
+							reminded,
+							lastUpdated
 					 FROM User patientUser,
 						  Patient,
 						  User doctorUser,
@@ -206,6 +207,26 @@ export default class DoctorService {
 		const date = new Date(appointment.date);
 		const sql = 'INSERT INTO Appointment VALUES (?, ?, ?, ?)';
 		await db.query(sql, [medicalId, licenseId, date, appointment.subject]);
+		await this.sendEmailToPatient(medicalId, appointment);
+	}
+
+	async sendEmailToPatient(medicalId: string, appointment: IAppointment) {
+		const db: any = Container.get('mysql');
+		const mailerService: any = Container.get('mailerService');
+		const sql = 'SELECT email FROM User, Patient WHERE Patient.userId = User.id AND medicalId = ?';
+		const [rows] = await db.query(sql, medicalId);
+		if (rows.length === 0) {
+			throw new Error('User does not exist');
+		}
+		mailerService.sendMail({
+			from: 'notifications@cvoid-19-app.web.app',
+			to: `${rows[0].email}`,
+			subject: `${appointment.subject}`,
+			html: `
+							<p>Your Doctor has set an appointment at ${appointment.date} </p>
+
+						`
+		});
 	}
 
 	async verifyAppointment(licenseId: string, medicalId: string) {

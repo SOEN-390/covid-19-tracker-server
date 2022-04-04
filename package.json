@@ -31,6 +31,7 @@
     "express": "^4.17.2",
     "firebase-admin": "^10.0.2",
     "jwt-decode": "^3.1.2",
+    "nodemailer": "^6.7.3",
     "promise-mysql2": "^1.0.0",
     "pusher": "^5.0.0",
     "reflect-metadata": "^0.1.13",

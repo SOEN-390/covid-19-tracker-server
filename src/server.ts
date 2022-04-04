@@ -6,7 +6,7 @@ import routes from './api/routes';
 import db from './config/db';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-
+import mailer from './config/mailer';
 const admin = require('firebase-admin');
 
 function startServer() {
@@ -29,12 +29,12 @@ function startServer() {
 		console.log('Server is listening on port 8443 - https');
 	});
 
-	dotenv.config({path: process.env.CONFIG_PATH});
+	dotenv.config({ path: process.env.CONFIG_PATH });
 
 	app.use(cors());
 
 	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({extended: true}));
+	app.use(bodyParser.urlencoded({ extended: true }));
 
 	app.get('/', (req, res) => {
 		res.send('Welcome to the COVID-19 Tracker App Server');
@@ -48,6 +48,7 @@ function startServer() {
 	app.use(config.api.prefix + config.api.version, routes());
 
 	db();
+	mailer();
 
 	admin.initializeApp({
 		credential: admin.credential.cert({
