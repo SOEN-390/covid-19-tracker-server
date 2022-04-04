@@ -141,7 +141,7 @@ export default class PatientService {
 			lastName: rows[0].lastName,
 		};
 	}
-  
+
 	public async getAllPatients(userId: string): Promise<IPatientReturnData[]> {
 		const patientsArray: IPatientReturnData[] = [];
 		const db: any = Container.get('mysql');
@@ -222,11 +222,7 @@ export default class PatientService {
 		}
 	}
 
-	async unFlagPatient(
-		userId: string,
-		medicalId: string,
-		role: UserType
-	): Promise<void> {
+	async unFlagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
@@ -284,10 +280,7 @@ export default class PatientService {
 		}
 	}
 
-	async getMyRequestedSymptoms(
-		userId: string,
-		medicalId: string
-	): Promise<ISymptom[]> {
+	async getMyRequestedSymptoms(userId: string, medicalId: string): Promise<ISymptom[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql =
@@ -376,5 +369,5 @@ export default class PatientService {
 			throw new Error('Patient is not assigned to this Doctor');
 		}
 	}
-  
+
 }
