@@ -293,11 +293,7 @@ export default class PatientService {
 		return rows;
 	}
 
-	async submitSymptomsResponse(
-		userId: string,
-		medicalId: string,
-		responseList: ISymptom[]
-	) {
+	async submitSymptomsResponse(userId: string, medicalId: string, responseList: ISymptom[]) {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		for (const symptom of responseList) {
@@ -309,7 +305,7 @@ export default class PatientService {
 		}
 	}
 
-	async getLatestSymptoms(userId: string, medicalId: string): Promise<ISymptomResponse> {
+	async getLatestSymptoms(userId: string, medicalId: string): Promise<ISymptomResponse[]> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		const sql = 'SELECT name, description, response, onDate ' +
