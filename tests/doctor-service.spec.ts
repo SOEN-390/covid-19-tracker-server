@@ -284,32 +284,6 @@ describe('Doctor service unit-test', () => {
 		});
 	});
 
-	describe('Book an appointment with Patient', () => {
-
-		beforeEach(() => {
-			jest.spyOn(doctorService, 'verifyAppointment').mockImplementation(async ()=> {
-				return;
-			});
-
-			const Mysql = jest.fn(() => ({
-				query: jest.fn().mockReturnValue([testPatientData])
-			}));
-
-			mysql = new Mysql();
-
-			Container.set('mysql', mysql);
-		});
-
-		test('book an appointment', async () => {
-			try {
-				await doctorService.bookAppointment(userId, testDoctorData.licenseId,
-					testPatientData.medicalId, {date: '', subject: 'test'})
-			}
-			catch (e) {
-				expect(e).toBeNaN();
-			}
-		});
-	});
 
 	describe('Verify Appointment', () => {
 
@@ -375,7 +349,80 @@ describe('Doctor service unit-test', () => {
 
 		test('verify user', async () => {
 			try {
-				await doctorService.verifyUser(userId)
+				await doctorService.verifyUser(userId);
+			}
+			catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+
+	});
+
+	describe('Book Appointment', () => {
+
+		beforeEach(() => {
+
+			jest.spyOn(doctorService, 'verifyUser').mockImplementation(async ()=> {
+				return;
+			});
+
+			jest.spyOn(doctorService, 'verifyAppointment').mockImplementation(async ()=> {
+				return;
+			});
+
+			jest.spyOn(doctorService, 'sendEmailToPatient').mockImplementation(async ()=> {
+				return;
+			});
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([])
+			}));
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('book appointment', async () => {
+			try {
+				await doctorService.bookAppointment(userId, testDoctorData.licenseId,
+					testPatientData.medicalId, {date: '', subject:'test'});
+			}
+			catch (e) {
+				expect(e).toBeNaN();
+			}
+		});
+
+	});
+
+
+	describe('Send Email To Patient', () => {
+
+		beforeEach(() => {
+
+			let rows = [testDoctorData];
+
+			const Mysql = jest.fn(() => ({
+				query: jest.fn().mockReturnValue([rows])
+			}));
+
+			const Mailer = jest.fn(() => ({
+				sendMail: jest.fn().mockReturnValue([])
+			}));
+
+			const mailer = new Mailer();
+
+			Container.set('mailerService', mailer);
+
+			mysql = new Mysql();
+
+			Container.set('mysql', mysql);
+		});
+
+		test('send email to patient', async () => {
+			try {
+				await doctorService.sendEmailToPatient(testPatientData.medicalId,
+					{date: '', subject:'test'});
 			}
 			catch (e) {
 				expect(e).toBeNaN();
