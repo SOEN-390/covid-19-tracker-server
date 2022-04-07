@@ -191,11 +191,7 @@ export default class PatientService {
 		await db.query(sql, [testResult, medicalId]);
 	}
 
-	async flagPatient(
-		userId: string,
-		medicalId: string,
-		role: UserType
-	): Promise<void> {
+	async flagPatient(userId: string, medicalId: string, role: UserType): Promise<void> {
 		const db: any = Container.get('mysql');
 		await this.verifyUser(userId);
 		await this.verifyRole(userId, role);
