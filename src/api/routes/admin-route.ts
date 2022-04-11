@@ -11,6 +11,7 @@ const route = Router();
 export default (app: Router) => {
 	app.use('/admins', route);
 
+	
 	route.patch('/patient/:medicalId/doctor/:licenseId/assign', middleware.authenticateJWT,
 		celebrate({
 			params: Joi.object({
